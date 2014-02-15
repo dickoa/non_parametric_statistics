@@ -75,42 +75,30 @@ x <- c(1, 10, 23, 3, 5)
 rank(x)
 #+end_src
 
-** Propriété 							    :B_frame:
+* Loi des statistiques de rang
+** Loi jointe 							    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
-*** Propriété 						       :B_definition:
+*** 								    :B_block:
     :PROPERTIES:
-    :BEAMER_env: definition
+    :BEAMER_env: block
     :END:
 Soit $\mathcal{S}_n$ l'ensemble des permutations ${1,...,n}$ alors
-le vecteur aléatoire $(R_i,...,R_n)$ est équidistribué sur $\mathcal{S}_n$.
+le vecteur aléatoire $(R_i,...,R_n)$ est uniformément distribué sur $\mathcal{S}_n$.
 Soit $\sigma \in \mathcal{S}_n$
 \[
 P(R_1 = \sigma(1),...,R_n = \sigma(n)) = \frac{1}{n!}
 \]
+
 
 *** Démonstration 						    :B_block:
     :PROPERTIES:
     :BEAMER_env: block
     :END:
 Laissé en exercice pour la prochaine séance
-** Remarque 							    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-*** 								    :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-- Toute statistique de rang a une /loi indépendante/ de la loi
-  $F$ des observations.
-- Il s'agit d'une propriété essentielle pour la mise en place de certains procédés 
-  robuste et non paramétrique.
-
-* Loi des statistiques de rang
-** Loi des statistiques de rang					    :B_frame:
+** Loi marginale 						    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -128,6 +116,19 @@ P(R_i = k) = \sum_{r \in \mathcal{S}_n} P(R = r, R_i = k)
 \[
 P(R_i = k, R_j = l) = \sum_{r \in \mathcal{S}_n} P(R = r, R_i = k, R_j = l) = \frac{(n - 2)!}{n!}
 \]
+
+** Remarque 							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+- Toute statistique de rang a une /loi indépendante/ de la loi
+  $F$ des observations.
+- Il s'agit d'une propriété essentielle pour la mise en place de certains procédés 
+  robuste et non paramétrique.
 
 * Moments des statistiques de rang
 ** Moments des statistiques de rang				    :B_frame:
@@ -188,7 +189,7 @@ où :
 Soit $\mathrm{S}_n$ une statistique linéaire de rang :
 
 \[
-\mathrm{S}_n = \sum_{k = 1}^n c_i a_n(R_i)
+\mathrm{S}_n = \sum_{i = 1}^n c_i a_n(R_i)
 \]
 
 alors 

@@ -1,0 +1,300 @@
+% Created 2014-02-02 Sun 21:31
+\documentclass[xetex, bigger]{beamer}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{minted}
+\usepackage{isomath}
+\usepackage{mathspec}
+\usepackage{xltxtra}
+\usepackage{xunicode}
+\usepackage{url}
+\usepackage{rotating}
+\usepackage[frenchb, american]{babel}
+\usepackage[babel]{csquotes}
+\usepackage{hyperref}
+\usepackage{soul}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{minted}
+\usepackage{fancyvrb}
+\definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+\newminted{r}{fontsize=\small, bgcolor=newgray}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+\setmainfont[Mapping=tex-text,Ligatures=Common]{Linux Libertine O}
+\setsansfont[Mapping=tex-text,Ligatures=Common]{Linux Biolinum O}
+\setmonofont[Scale=0.75]{Source Code Pro}
+\institute[ENSAE]{dicko.ahmadou@gmail.com\\\vskip 0.5cmENSAE}
+\setbeamertemplate{navigation symbols}{}
+\usetheme{Boadilla}
+\usecolortheme{orchid}
+\author{Ahmadou H. DICKO}
+\date{Janvier 2014}
+\title{Statistique non paramétrique}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.3.1 (Org mode 8.2.5h)}}
+\begin{document}
+
+\maketitle
+\begin{frame}{Plan}
+\tableofcontents
+\end{frame}
+
+
+\section{Introduction}
+\label{sec-1}
+\begin{frame}[t,label=sec-1-1]{Introduction}
+\begin{itemize}
+\item L'inférence statistique classique est basée sur la spécification \alert{parfaite} d'une famille restreinte de modèle.
+
+\item On s'intèresse principalement à deux problématiques :
+\begin{itemize}
+\item Estimation \emph{optimale} de paramètres
+\item Tests \emph{optimaux} afin de comparer les paramètres
+\end{itemize}
+\end{itemize}
+
+
+\begin{itemize}
+\item Soit un échantillon \((X_1,...,X_n)\) issue du modèle \((X, P_{\theta})\) 
+\begin{itemize}
+\item X est une v.a de loi \(P_{\theta}\)
+\item \(\theta\ \in \mathbb{R}^p\) est le paramètre de la loi P.
+\end{itemize}
+
+\item \((X_1,...,X_n)\) supposé :
+\begin{itemize}
+\item i.i.d
+\item de loi stable
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}[label=sec-1-2]{Problématique}
+Cependant, de nombreuses questions peuvent se poser au praticien qui cherche à développer une approche plus "robuste" :
+
+\begin{itemize}
+\item Comment procéder à des tests lorsque cette spécification de la loi \(P_{\theta}\) devient devient sensible ?
+\item Comment traiter des échantillons de petite taille et/ou dépendant ?
+\item Comment estimer des paramètres \(\theta\) quand on n'a aucune idée de modèle à priori ?
+\item Comment traiter de gros volumes de données avec un grand nombre de variables (p >> n) ?
+\item Comment traiter les données tronquées, censurées ?
+\end{itemize}
+\end{frame}
+\begin{frame}[label=sec-1-3]{Une solution}
+Il existe alors deux voies pour le statisticien :
+
+\begin{itemize}
+\item La voie non paramétrique 
+\begin{itemize}
+\item Prendre en compte une plus large de famille de loi de probabilité
+\end{itemize}
+\item La voie de la robustesse
+\begin{itemize}
+\item Vérifier et quantifier la stabilité des procédures quand on s'éloigne des hypothèses théoriques
+\end{itemize}
+\end{itemize}
+\end{frame}
+\section{Statistique non paramétrique}
+\label{sec-2}
+\begin{frame}{Plan}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}[label=sec-2-1]{Définition de la statistique non paramétrique}
+
+\begin{block}{}
+Définir la notion de statistique non paramétrique n'est pas triviale tant la
+littérature ne semble en accord sur les concepts qui rentre sous le terme non paramétrique.
+
+Cependant pour le reste de ce cours, on entendra par statistique non paramétrique toutes les procédures
+qui permettent de traiter des problèmes statistiques tout en supposant le \emph{minimum} d'hypothèse
+sur la distribution de probabilité. Donc il s'agit de considérer des modèles statistique de dimension infinie.
+\end{block}
+\end{frame}
+
+\begin{frame}[label=sec-2-2]{Importance de la statistique non paramétrique}
+\begin{itemize}
+\item Propriété des statistiques d'ordres et de rangs
+\item Tests non paramétriques
+\begin{itemize}
+\item Tests d'adéquation
+\item Tests d'indépendance
+\end{itemize}
+\item Estimation non paramétrique
+\begin{itemize}
+\item Estimation d'une densité
+\item Régression non paramétrique
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t,label=sec-2-3]{Domaine d'application de la statistique non paramétrique}
+\begin{itemize}
+\item Médecine
+\begin{itemize}
+\item Modèle de survie
+\end{itemize}
+
+\item Industrie
+\begin{itemize}
+\item Contrôle de qualités (e.g nouveau produit)
+\end{itemize}
+
+\item Agriculture
+\begin{itemize}
+\item Signifcativité d'un traitement sur le rendement agricole
+\end{itemize}
+\end{itemize}
+\end{frame}
+\section{Exemple d'analyses non paramétriques}
+\label{sec-3}
+\begin{frame}{Plan}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}[fragile,label=sec-3-1]{Tests non paramétriques}
+ \begin{verbatim}
+'data.frame':   14 obs. of  2 variables:
+ $ x: num  2.9 3 2.5 2.6 3.2 3.8 2.7 4 2.4 2.8 ...
+ $ g: Factor w/ 3 levels "contrôle","maladie A",..: 1 1 1 1 1 2 2 2 2 3 ...
+\end{verbatim}
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{rcode}
+kruskal.test(x ~ g)
+\end{rcode}
+
+\begin{verbatim}
+
+        Kruskal-Wallis rank sum test
+
+data:  x by g
+Kruskal-Wallis chi-squared = 0.7714, df = 2, p-value =
+0.68
+\end{verbatim}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\includegraphics[width=.9\linewidth]{fig/bxplt.pdf}
+\end{column}
+\end{columns}
+\end{frame}
+\begin{frame}[fragile,label=sec-3-2]{Estimation non paramétrique}
+ \begin{verbatim}
+'data.frame':   50 obs. of  2 variables:
+ $ dist : num  2 10 4 22 16 10 18 26 34 17 ...
+ $ speed: num  4 4 7 7 8 9 10 10 10 11 ...
+\end{verbatim}
+
+
+
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\includegraphics[width=.9\linewidth]{fig/ols.pdf}
+\end{column}
+
+
+\begin{column}{0.5\textwidth}
+\includegraphics[width=.9\linewidth]{fig/loess.pdf}
+\end{column}
+\end{columns}
+\end{frame}
+\begin{frame}[label=sec-3-3]{Estimation non paramétrique}
+\begin{center}
+$X \sim \mathcal{N}(5, 3)$ 
+\end{center}
+
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\includegraphics[width=.9\linewidth]{fig/hist_est.pdf}
+\end{column}
+
+
+\begin{column}{0.5\textwidth}
+\includegraphics[width=.9\linewidth]{fig/dens_est.pdf}
+\end{column}
+\end{columns}
+\end{frame}
+\section{Plan du cours}
+\label{sec-4}
+\begin{frame}{Plan}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}[label=sec-4-1]{Plan du cours : Plan du cours}
+Deux grandes parties :
+\vskip 0.2cm
+\begin{itemize}
+\item Tests non paramétriques
+\end{itemize}
+\vskip 0.2cm
+\begin{itemize}
+\item Estimation non paramétrique
+\end{itemize}
+\end{frame}
+\begin{frame}[label=sec-4-2]{Plan du cours : tests non paramétriques}
+\begin{enumerate}
+\item Cadre de la statistique non paramétrique
+\begin{itemize}
+\item Statistique d'ordre
+\item Statistique de rang
+\item Efficacité relative asymptotique
+\end{itemize}
+\item Problème à un échantillon
+\item Problème à K échantillons
+\end{enumerate}
+\end{frame}
+\begin{frame}[label=sec-4-3]{Plan du cours : estimation non paramétrique}
+\begin{enumerate}
+\item Estimation de paramètres de position et d'échelle
+\item Estimation d'une densité
+\item Régression non paramétrique
+\begin{itemize}
+\item méthode des polynômes locaux
+\item méthode des splines
+\end{itemize}
+\item Régularisation et pénalisation en régression
+\end{enumerate}
+\end{frame}
+\begin{frame}[t,label=sec-4-4]{Validation de ce cours}
+\begin{itemize}
+\item La note principale sera basé sur :
+\item Un TP :
+\begin{itemize}
+\item Un maximum de deux élèves par groupe
+\item Un maximum de 15 pages
+\item Les codes qui seront fournis doivent permettre de reproduire les résultats
+\item L'interpretation tient une place importante sur la note finale
+\end{itemize}
+\item Points bonus pour la participation (questions, exercices, etc.)
+\item Un examen écrit (commun avec la partie robustesse)
+\item Note finale = (2 x examen + tp + bonus) / 3
+\end{itemize}
+\end{frame}
+\begin{frame}[t,label=sec-4-5]{Bibliographie}
+\begin{thebibliography}{9}
+\setbeamertemplate{bibliography item}[book]
+\bibitem{A} Lecoutre JP. et Tassi P. (1987), Estimation non
+paramétrique et Robustesse, Economica
+\setbeamertemplate{bibliography item}[book]
+\bibitem{B} Ahamada I. et Flachaire E. (2008), Économétrie non paramétrique,
+Economica
+\setbeamertemplate{bibliography item}[book]
+\bibitem{C} Wasserman L. (2006), All of Nonparametric Statistics,
+Springer tests in statistics
+\setbeamertemplate{bibliography item}[book]
+\bibitem{D} Sheskin DJ (2003), Handbook of parametric and nonparametric statistical procedures 
+3rd edition, Chapman and Hall/CRC
+\setbeamertemplate{bibliography item}[article]
+\bibitem{D} Sadio D (2012), Statistique non paramétrique et robustesse, ENSAE
+\end{thebibliography}
+\end{frame}
+% Emacs 24.3.1 (Org mode 8.2.5h)
+\end{document}

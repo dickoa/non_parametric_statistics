@@ -1,0 +1,181 @@
+% Created 2014-02-13 Thu 06:37
+\documentclass[xetex, bigger]{beamer}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{minted}
+\usepackage{isomath}
+\usepackage{mathspec}
+\usepackage{xltxtra}
+\usepackage{xunicode}
+\usepackage{url}
+\usepackage{rotating}
+\usepackage[frenchb, american, english]{babel}
+\usepackage[babel]{csquotes}
+\usepackage{hyperref}
+\usepackage{soul}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{minted}
+\usepackage{fancyvrb}
+\definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+\newminted{r}{fontsize=\small, bgcolor=newgray}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+\setmainfont[Mapping=tex-text,Ligatures=Common]{Minion Pro}
+\setsansfont[Mapping=tex-text,Ligatures=Common]{Myriad Pro}
+\setmathfont[Scale=MatchLowercase]{Minion Pro}
+\setmonofont[Scale=0.75]{Source Code Pro}
+\institute[ENSAE]{ENSAE}
+\setbeamertemplate{navigation symbols}{}
+\usetheme{Boadilla}
+\usecolortheme{orchid}
+\author{Ahmadou H. DICKO}
+\date{Janvier 2014}
+\title{Statistique de rang}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.3.1 (Org mode 8.2.5h)}}
+\begin{document}
+
+\maketitle
+\selectlanguage{frenchb}
+\begin{frame}[t]{Plan}
+\tableofcontents
+\end{frame}
+
+\section{Introduction}
+\label{sec-1}
+\begin{frame}[label=sec-1-1]{Introduction}
+\begin{itemize}
+\item Les statistique de rang de jouent un rôle important dans la construction 
+de tests nonparamétriques.
+\item Elle sont à la base des R-estimateurs utilisés en inférence robustes
+\end{itemize}
+\end{frame}
+\section{Définition}
+\label{sec-2}
+\begin{frame}[fragile,t,label=sec-2-1]{Définition}
+ \begin{definition}
+Le rang \(R_i\), de la v.a \(X_i\) est un entier qui représente la position de \(X_i\)
+dans l'échantillon ordonnée \((X_{(1)},...,X_{(n)})\)
+\[
+\displaystyle R_i = \sum_{j = 1}^n 1_{\mathbb{R^+}}(X_i - X_j),\quad 1 \leq i \leq n
+\]
+\end{definition}
+
+\begin{block}{Code R}
+\begin{rcode}
+x <- c(1, 10, 23, 3, 5)
+rank(x)
+\end{rcode}
+
+\begin{verbatim}
+[1] 1 4 5 2 3
+\end{verbatim}
+\end{block}
+\end{frame}
+\begin{frame}[t,label=sec-2-2]{Propriété}
+\begin{definition}[Propriété]
+Soit \(\mathcal{S}_n\) l'ensemble des permutations \({1,...,n}\) alors
+le vecteur aléatoire \((R_i,...,R_n)\) est équidistribué sur \(\mathcal{S}_n\).
+Soit \(\sigma \in \mathcal{S}_n\)
+\[
+P(R_1 = \sigma(1),...,R_n = \sigma(n)) = \frac{1}{n!}
+\]
+\end{definition}
+\begin{block}{Démonstration}
+Laissé en exercice pour la prochaine séance
+\end{block}
+\end{frame}
+
+\begin{frame}[label=sec-2-3]{Remarque}
+\begin{block}{}
+\begin{itemize}
+\item Toute statistique de rang a une \emph{loi indépendante} de la loi
+\(F\) des observations.
+\item Il s'agit d'une propriété essentielle pour la mise en place de certains procédés 
+robuste et non paramétrique.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Loi des statistiques de rang}
+\label{sec-3}
+\begin{frame}[label=sec-3-1]{Loi des statistiques de rang}
+\begin{block}{}
+\[
+P(R_i = k) = \sum_{r \in \mathcal{S}_n} P(R = r, R_i = k)
+           = \frac{(n - 1)!}{n!}
+           = \frac{1}{n}
+\]
+
+\[
+P(R_i = k, R_j = l) = \sum_{r \in \mathcal{S}_n} P(R = r, R_i = k, R_j = l) = \frac{(n - 2)!}{n!}
+\]
+\end{block}
+\end{frame}
+\section{Moments des statistiques de rang}
+\label{sec-4}
+\begin{frame}[label=sec-4-1]{Moments des statistiques de rang}
+\begin{block}{}
+\[
+\mathbb{E}(R_i) = \sum_{k = 1}^n k \times P(R_i = k) = \frac{1}{n} \sum_{k = 1}^n k = \frac{(n + 1)}{2} 
+\]
+
+\[
+\mathbb{V}(R_i) = \mathbb{E}(R_i^2) - \mathbb{E}(R_i)^2 = \frac{1}{n} \sum_{k = 1}^n k^2 - \frac{(n + 1)^2}{2} = \frac{n^2 - 1}{12}
+\]
+
+\[
+\mathbb{E}(R_iR_j) = \frac{1}{n(n-1)} \sum_{k \neq l}^n kl = \frac{1}{n(n-1)} [n^2 \mathbb{E}(R_i)^2 - n \mathbb{E}(R_i^2)] 
+\]
+\end{block}
+\end{frame}
+\section{Statistique linéaire de rang}
+\label{sec-5}
+\begin{frame}[t,label=sec-5-1]{Statistiques linéaire de rang}
+\begin{block}{Définition}
+Soit \(X\) une va de loi \(F\).
+
+Un statistique linéaire de rang est une fonction mésurable \(\mathrm{S}_n\) :
+
+\[
+\mathrm{S}_n = \sum_{k = 1}^n c_i a_n(R_i)
+\]
+
+où : 
+\begin{itemize}
+\item \(R_i\) est le rang de \(X_i\) dans \(X\) de taille \(n\)
+\item \(a_n\) est une fonction à valeur dans \(]0, 1[\)
+\item \(c_i\) une constante
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[t,label=sec-5-2]{Moment d'une statistique linéaire de rang}
+\begin{block}{}
+Soit \(\mathrm{S}_n\) une statistique linéaire de rang :
+
+\[
+\mathrm{S}_n = \sum_{k = 1}^n c_i a_n(R_i)
+\]
+
+alors 
+
+\begin{itemize}
+\item \(\displaystyle\mathbb{E}(\mathrm{S}_n) = n \bar{a}\bar{c}\)
+\item \(\displaystyle\mathbb{V}(\mathrm{S}_n) = \frac{1}{n-1} \sum_{i}^n(c_i - \bar{c})^2 \sum_{i}^n(a_n(i) - \bar{a})^2\)
+\end{itemize}
+
+où
+
+\begin{itemize}
+\item \(\displaystyle \bar{c} = \frac{1}{n} \sum_{i}^n c_i\) et \(\displaystyle \bar{a} = \frac{1}{n} \sum_{i}^n a_n(i)\)
+\end{itemize}
+\end{block}
+\end{frame}
+% Emacs 24.3.1 (Org mode 8.2.5h)
+\end{document}

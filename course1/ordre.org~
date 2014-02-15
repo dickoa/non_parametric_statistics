@@ -1,0 +1,229 @@
+#+TITLE: Statistique d'ordre
+#+AUTHOR: Ahmadou H. DICKO
+#+DATE: Janvier 2014
+#+startup: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xetex, bigger]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+#+LATEX_HEADER: \newminted{r}{fontsize=\small, bgcolor=newgray}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text,Ligatures=Common]{Linux Libertine O}
+#+LATEX_HEADER: \setsansfont[Mapping=tex-text,Ligatures=Common]{Linux Biolinum O}
+#+LATEX_HEADER: \setmonofont[Scale=0.75]{Source Code Pro}
+#+LATEX_HEADER: \institute[ENSAE]{ENSAE}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: Boadilla
+#+BEAMER_COLOR_THEME: orchid
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+#+PROPERTY: results output graphics
+#+OPTIONS: toc:nil H:2
+
+#+LATEX:\selectlanguage{frenchb}
+#+LATEX:\begin{frame}[t]{Plan}
+#+LATEX:\tableofcontents
+#+LATEX:\end{frame}
+
+
+* Introduction
+#+begin_src R :exports none :results silent :session
+  require(Cairo)
+    mainfont <- "Garamond"
+    CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
+               bold = paste(mainfont, "style=Bold", sep=":"),
+               italic = paste(mainfont, "style=Italic", sep=":"),
+               bolditalic = paste(mainfont, "style=Bold Italic,BoldItalic", sep=":"))
+    pdf <- CairoPDF
+#+end_src
+  
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Les statistiques d'ordre ont un rôle très important en statistique :
+- Estimation robuste des paramètres de position
+- Détection de valeurs abérantes
+- Modélisation des évènements extrêmes
+- Fiabilité et contrôle de qualité
+
+** Convention 							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+Soit $X$ une variable aléatoire de loi de probabilité de fonction de répartition $F$ à valeurs dans $\mathbb{R}$.
+Sauf exception, nous supposerons que le variable X est continue.
+
+*** Notation 							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+- $f_{x_i}$ : densité de la v.a $X_i$
+- $F_{x_i}$ : f.r de la v.a $X_i$
+- $B(a, b) : \int_0^1 t^{a - 1} (1 - t)^{b - 1} dt$
+- $I_{x}(a, b)\ :\ \dfrac{1}{B(a, b)} \int_0^x t^{a - 1} (1 - t)^{b - 1} dt$ (fonction Beta incomplète) 
+
+* Définition
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Définition							:B_fullframe:
+   :PROPERTIES:
+   :BEAMER_env: fullframe
+   :BEAMER_OPT: t
+   :END:
+*** Définition							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+On appelle statistique d'ordre l'application T qui permet de classer les $X_i, i \in 1..n$ dans l'ordre croissant.
+\[
+T: (X_1, ..., X_n) \longrightarrow (X_{(1)}, ..., X_{(n)})
+\]
+
+*** Code R 							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+#+begin_src R :exports both
+x <- c(1, 10, 23, 3, 5)
+sort(x)
+#+end_src
+
+** Remarque 							:B_fullframe:
+   :PROPERTIES:
+   :BEAMER_env: fullframe
+   # :BEAMER_OPT: t
+   :END:
+*** Remarque 							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+Si les $X_i$ sont identiquement distribués selon une loi $F$ *continue* alors :
+\[
+P(X_{(1)} < X_{(2)} < ... < X_{(n -1)} < X_{(n)}) = 1
+\]
+
+*** Conséquence 						    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+- $U_i = F(X_i) \sim \mathcal{U}_{[0, 1]}$  
+- $\forall i \neq j, P(X_{(i)} = X_{(j)}) = 0$ donc pas d'ex-aequo
+
+* Loi dérivées des statistique d'ordre
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Loi de la statistique d'ordre 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								  :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+La densité de loi de la statistique d'ordre T est : 
+\[
+f_{T} =  n! \prod_{i = 1}^n f_{x_i} 1_{\{x_1 < ... < x_n\}}
+\]
+
+*** 								    :B_proof:
+    :PROPERTIES:
+    :BEAMER_env: proof
+    :END:
+Laissé en exercice pour la prochaine séance
+
+** Loi marginale de la statistique d'ordre 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								  :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+
+La densité de loi de la v.a X_{k:n} (ou X_{k}) 
+\[
+f_k(t) =  \dfrac{n!}{(k - 1)!(n - k)!} F^{k-1}(t)(1 - F^{n-k}(t))f(t)
+\]
+
+*** 								    :B_proof:
+    :PROPERTIES:
+    :BEAMER_env: proof
+    :END:
+Laissé en exercice pour la prochaine séance
+
+** Loi marginale de la statistique d'ordre 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								  :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+
+La densité de loi de la v.a X_{k:n} (ou X_{k}) 
+\[
+f_k(t) =  \dfrac{n!}{(k - 1)!(n - k)!} F^{k-1}(t)(1 - F^{n-k}(t))f(t)
+\]
+
+*** 								    :B_proof:
+    :PROPERTIES:
+    :BEAMER_env: proof
+    :END:
+Laissé en exercice pour la prochaine séance
+* Moments des statistiques d'ordre
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Moment des X_{(k)} 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								  :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+
+*** 								    :B_proof:
+    :PROPERTIES:
+    :BEAMER_env: proof
+    :END:
+A faire pour la prochaine fois.
+
+* Exercices
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Exercices 							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								  :B_theorem:
+    :PROPERTIES:
+    :BEAMER_env: theorem
+    :END:
+
+*** 								    :B_proof:
+    :PROPERTIES:
+    :BEAMER_env: proof
+    :END:
+A faire pour la prochaine fois.
+
+
+

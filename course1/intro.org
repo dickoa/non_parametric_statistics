@@ -1,0 +1,365 @@
+#+TITLE: Statistique non paramétrique
+#+AUTHOR: Ahmadou H. DICKO
+#+DATE: Janvier 2014
+#+startup: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xetex, bigger]
+#+LANGUAGE: fr
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+#+LATEX_HEADER: \newminted{r}{fontsize=\small, bgcolor=newgray}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text,Ligatures=Common]{Linux Libertine O}
+#+LATEX_HEADER: \setsansfont[Mapping=tex-text,Ligatures=Common]{Linux Biolinum O}
+#+LATEX_HEADER: \setmonofont[Scale=0.75]{Source Code Pro}
+#+LATEX_HEADER: \institute[ENSAE]{dicko.ahmadou@gmail.com\\\vskip 0.5cmENSAE}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: Boadilla
+#+BEAMER_COLOR_THEME: orchid
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+#+PROPERTY: results output graphics
+#+OPTIONS: H:2
+
+#+begin_src emacs-lisp :exports results :results silent
+(setq org-beamer-outline-frame-title "Plan")
+#+end_src
+
+* Introduction
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+#+begin_src R :exports none :results silent :session
+  require(Cairo)
+    mainfont <- "Garamond"
+    CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
+               bold = paste(mainfont, "style=Bold", sep=":"),
+               italic = paste(mainfont, "style=Italic", sep=":"),
+               bolditalic = paste(mainfont, "style=Bold Italic,BoldItalic", sep=":"))
+    pdf <- CairoPDF
+  options(prompt = "> ")
+#+end_src
+
+- L'inférence statistique classique est basée sur la spécification *parfaite* d'une famille restreinte de modèle. 
+
+- On s'intèresse principalement à deux problématiques :
+  - Estimation /optimale/ de paramètres
+  - Tests /optimaux/ afin de comparer les paramètres
+
+
+- Soit un échantillon $(X_1,...,X_n)$ issue du modèle $(X, P_{\theta})$ 
+  - X est une v.a de loi $P_{\theta}$ 
+  - $\theta\ \in \mathbb{R}^p$ est le paramètre de la loi P. 
+
+- $(X_1,...,X_n)$ supposé :
+  - i.i.d 
+  - de loi stable
+
+
+# - Cette spéfication peut être très éloignés de la réalité
+# - Il existe alors deux voies pour le statisticien :
+#  - La voie non paramétrique 
+#  - La voie de la robustesse
+# - Chaque voie fera l'objet d'un approfondissement
+# - La première voie : l'inférence non paramétrique fait l'objet de cette partie du cours
+
+** Problématique 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:   
+Cependant, de nombreuses questions peuvent se poser au praticien qui cherche à développer une approche plus "robuste" :
+
+- Comment procéder à des tests lorsque cette spécification de la loi $P_{\theta}$ devient devient sensible ?
+- Comment traiter des échantillons de petite taille et/ou dépendant ?
+- Comment estimer des paramètres $\theta$ quand on n'a aucune idée de modèle à priori ?
+- Comment traiter de gros volumes de données avec un grand nombre de variables (p >> n) ?
+- Comment traiter les données tronquées, censurées ?
+
+** Une solution 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:   
+Il existe alors deux voies pour le statisticien :
+
+- La voie non paramétrique 
+  - Prendre en compte une plus large de famille de loi de probabilité
+- La voie de la robustesse
+  - Vérifier et quantifier la stabilité des procédures quand on s'éloigne des hypothèses théoriques
+
+* Statistique non paramétrique
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+
+** Définition de la statistique non paramétrique 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+Définir la notion de statistique non paramétrique n'est pas triviale tant la
+littérature ne semble en accord sur les concepts qui rentre sous le terme non paramétrique.
+
+Cependant pour le reste de ce cours, on entendra par statistique non paramétrique toutes les procédures
+qui permettent de traiter des problèmes statistiques tout en supposant le /minimum/ d'hypothèse
+sur la distribution de probabilité. Donc il s'agit de considérer des modèles statistique de dimension infinie.
+
+
+** Importance de la statistique non paramétrique 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+- Propriété des statistiques d'ordres et de rangs
+- Tests non paramétriques
+  - Tests d'adéquation
+  - Tests d'indépendance
+- Estimation non paramétrique
+  - Estimation d'une densité
+  - Régression non paramétrique
+
+
+** Domaine d'application de la statistique non paramétrique 	    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+- Médecine
+  - Modèle de survie
+
+- Industrie
+  - Contrôle de qualités (e.g nouveau produit)
+
+- Agriculture
+  - Signifcativité d'un traitement sur le rendement agricole
+ 
+* Exemple d'analyses non paramétriques
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+
+** Tests non paramétriques 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+#+begin_src R :exports results 
+  x <- c(2.9, 3.0, 2.5, 2.6, 3.2) # normal subjects
+  y <- c(3.8, 2.7, 4.0, 2.4)      # with obstructive airway disease
+  z <- c(2.8, 3.4, 3.7, 2.2, 2.0) # with asbestosis
+  x <- c(x, y, z)
+  g <- factor(rep(1:3, c(5, 4, 5)),
+              labels = c("contrôle",
+                         "maladie A",
+                         "maladie B"))
+str(data.frame(x, g))
+#+end_src
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+#+begin_src R :exports both
+kruskal.test(x ~ g)
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column 
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results graphics :file fig/bxplt.pdf :height 7
+  par(bty = "n")
+  boxplot(x ~ g, lwd = 0.5, las = 1, cex = 0.8)
+#+end_src
+
+** Estimation non paramétrique 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+#+begin_src R :exports results 
+str(cars[,c("dist", "speed")])
+#+end_src
+
+
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+#+begin_src R :exports results :results graphics :file fig/ols.pdf :height 5
+  cars_lm <- lm(dist ~ speed, data = cars)
+  res <- seq(min(cars$dist), max(cars$dist))
+  pred <- predict(cars_lm, newdata = data.frame(speed = res),
+                  se.fit = TRUE)
+  plot(dist ~ speed, data = cars, pch = 19, cex = 0.5, las = 1)
+  lines(res, pred$fit)
+  lines(res, pred$fit - 1.96 * pred$se.fit, lty = "dashed")
+  lines(res, pred$fit + 1.96 * pred$se.fit, lty = "dashed")
+  text(5, 115, "OLS", cex = 1.2)  
+#+end_src
+
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column 
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results graphics :file fig/loess.pdf :height 5
+  cars_lo <- loess(dist ~ speed, cars)
+  res <- seq(min(cars$dist), max(cars$dist))
+  pred <- predict(cars_lo, res, se = TRUE)
+  plot(dist ~ speed, data = cars, pch = 19, cex = 0.5, las = 1)
+  lines(res, pred$fit)
+  lines(res, pred$fit - 1.96 * pred$se.fit, lty = "dashed")
+  lines(res, pred$fit + 1.96 * pred$se.fit, lty = "dashed")
+  text(9, 115, "Polynôme locaux", cex = 1.2)
+#+end_src
+
+** Estimation non paramétrique 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+#+BEGIN_LATEX
+\begin{center}
+$X \sim \mathcal{N}(5, 3)$ 
+\end{center}
+#+END_LATEX
+
+
+#+begin_src R :exports results :results silent 
+  set.seed(4)
+  x <- rnorm(n = 1000, mean = 5, sd = 3)
+library(MASS)
+#+end_src
+   
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+#+begin_src R :exports results :results graphics :file fig/hist_est.pdf :height 5
+truehist(x, col = "steelblue", lwd = 0.6, las = 1)
+curve(dnorm(x, mean = 5, sd = 3), col = "red", add = TRUE, lwd = 0.6)
+rug(x, lwd = 0.6)
+legend("topleft", legend = c("theo", "est"),
+       col = c("red", "steelblue"), lty = "solid")
+#+end_src
+
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column 
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results graphics :file fig/dens_est.pdf :height 5
+  plot(density(x, lwd = 0.6, las = 1), las = 1, main = "")
+  curve(dnorm(x, mean = 5, sd = 3), col = "red", add = TRUE, lwd = 0.6)
+  rug(x, lwd = 0.6)
+  legend("topleft", legend = c("theo", "est"),
+         col = c("red", "black"), lty = "solid")  
+#+end_src
+
+* Plan du cours
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+
+** Plan du cours : Plan du cours 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:   
+
+Deux grandes parties :
+\vskip 0.2cm
+ - Tests non paramétriques
+\vskip 0.2cm
+ - Estimation non paramétrique
+
+** Plan du cours : tests non paramétriques 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:   
+1. Cadre de la statistique non paramétrique
+   - Statistique d'ordre
+   - Statistique de rang
+   - Efficacité relative asymptotique
+2. Problème à un échantillon
+3. Problème à K échantillons
+
+** Plan du cours : estimation non paramétrique 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:   
+1. Estimation de paramètres de position et d'échelle
+2. Estimation d'une densité
+3. Régression non paramétrique
+   - méthode des polynômes locaux
+   - méthode des splines
+4. Régularisation et pénalisation en régression
+ 
+# ** Notation du cours 						    :B_frame:
+#    :PROPERTIES:
+#    :BEAMER_env: frame
+#    :BEAMER_OPT: t   
+#    :END:
+# # - $F(x) : P(X \leq x)$ (fonction de répartition)
+# # - $X_{(k:n)}$ ou $X_{k}$ : $k$ ème statistique d'ordre dans un échantillon de taille n  
+
+** Validation de ce cours 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t  
+   :END:
+- La note principale sera basé sur :
+- Un TP :
+  - Un maximum de deux élèves par groupe
+  - Un maximum de 15 pages
+  - Les codes qui seront fournis doivent permettre de reproduire les résultats
+  - L'interpretation tient une place importante sur la note finale
+- Points bonus pour la participation (questions, exercices, etc.)
+- Un examen écrit (commun avec la partie robustesse)
+- Note finale = (2 x examen + tp + bonus) / 3
+
+** Bibliographie						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+#+BEGIN_LATEX
+\begin{thebibliography}{9}
+\setbeamertemplate{bibliography item}[book]
+\bibitem{A} Lecoutre JP. et Tassi P. (1987), Estimation non
+paramétrique et Robustesse, Economica
+\setbeamertemplate{bibliography item}[book]
+\bibitem{B} Ahamada I. et Flachaire E. (2008), Économétrie non paramétrique,
+Economica
+\setbeamertemplate{bibliography item}[book]
+\bibitem{C} Wasserman L. (2006), All of Nonparametric Statistics,
+Springer tests in statistics
+\setbeamertemplate{bibliography item}[book]
+\bibitem{D} Sheskin DJ (2003), Handbook of parametric and nonparametric statistical procedures 
+3rd edition, Chapman and Hall/CRC
+\setbeamertemplate{bibliography item}[article]
+\bibitem{D} Sadio D (2012), Statistique non paramétrique et robustesse, ENSAE
+\end{thebibliography}
+#+END_LATEX
+   

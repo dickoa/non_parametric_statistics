@@ -1,0 +1,228 @@
+#+TITLE: Tests d'indépendance sur un échantillon
+#+AUTHOR: Ahmadou H. DICKO
+#+DATE: Février 2014
+#+startup: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xetex, bigger]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+#+LATEX_HEADER: \newminted{r}{fontsize=\small, bgcolor=newgray}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text,Ligatures=Common]{Minion Pro}
+#+LATEX_HEADER: \setsansfont[Mapping=tex-text,Ligatures=Common]{Myriad Pro}
+#+LATEX_HEADER: \setmathfont[Scale=MatchLowercase]{Minion Pro}
+#+LATEX_HEADER: \setmonofont[Scale=0.75]{Source Code Pro}
+#+LATEX_HEADER: \institute[ENSAE]{ENSAE}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: Boadilla
+#+BEAMER_COLOR_THEME: orchid
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+#+PROPERTY: results output graphics
+#+OPTIONS: toc:nil H:2
+
+#+LATEX:\selectlanguage{frenchb}
+#+LATEX:\begin{frame}[t]{Plan}
+#+LATEX:\tableofcontents
+#+LATEX:\end{frame}
+
+* Introduction
+#+begin_src R :exports none :results silent :session
+    library(Cairo)
+    mainfont <- "Minion Pro"
+    CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
+               bold = paste(mainfont, "style=Bold", sep=":"),
+               italic = paste(mainfont, "style=Italic", sep=":"),
+               bolditalic = paste(mainfont, "style=Bold Italic,BoldItalic", sep=":"))
+    pdf <- CairoPDF
+#+end_src
+  
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Les statistiques d'ordre ont un rôle très important en statistique :
+- Estimation robuste des paramètres de position
+- Détection de valeurs abérantes
+- Modélisation des évènements extrêmes
+- Fiabilité et contrôle de qualité
+
+** Convention 							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+Soit $X$ une variable aléatoire de loi de probabilité de fonction de répartition $F$ à valeurs dans $\mathbb{R}$.
+Sauf exception, nous supposerons que le variable X est continue.
+
+*** Notation 							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+- $R_i$ : rang de $X_i$ dans l'échantillon ordonné $(X_{(1)}, ..., X_{(n)})$
+- $f_{x_i}$ : f.r de la v.a $X_i$
+- $F_{x_i}$ : f.r de la v.a $X_i$
+
+* Coefficient de corréltation de rang de Spearman
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Corrélation de rang de Spearman : objectif 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Le test de corrélation de rang de spearman permet de mesurer.
+
+$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+
+** Corrélation de rang de Spearman : hypothèse 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+Sous l'hypothèse $H_0$
+
+** Corrélation de rang de Spearman : résolution 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+Le test de corrélation de rang de spearman permet de mesurer.
+\[
+r_s = \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}
+\]
+
+\[
+r_s =  1 - \frac{6}{n(n^2 - 1)}\sum_{i=1}^n(R_i - i)^2
+\]
+
+
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+** Corrélation de rang de Spearman : résolution 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+Le test de corrélation de rang de spearman permet de mesurer.
+\[
+r_s \sqrt{n - 1} \longrightarrow \mathcal{N}(0, 1)
+\]
+
+
+\[
+r_s \sqrt{\frac{n - 2}{1 - r^2}} \sim T_{n - 2}
+\]
+
+
+*** 								    :B_proof:
+    :PROPERTIES:
+    :BEAMER_env: proof
+    :END:
+  
+** Corrélation de rang de Spearman : exemple 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Le test de corrélation de rang de spearman permet de mesurer.
+
+$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+
+* Coefficient de corréltation de rang de Kendall
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Corrélation de rang de Kendall : objectif 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+    
+    $$\tau = \displaystyle 1 - \frac{4Q}{n(n - 1)}$$
+    
+où 
+
+$$Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)$$
+
+** Corrélation de rang de Kendall : hypothèse 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Le test de corrélation de rang de spearman permet de mesurer.
+
+$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+
+** Corrélation de rang de Kendall : résolution 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t      
+   :END: 
+
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+\[
+\tau = \displaystyle 1 - \frac{4Q}{n(n - 1)}
+\]
+    
+\[
+Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)
+\]
+
+** Corrélation de rang de Kendall : exemple 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Le test de corrélation de rang de spearman permet de mesurer.
+
+$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+
+* Exercices
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Exercices 							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+

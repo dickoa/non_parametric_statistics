@@ -1,4 +1,4 @@
-#+TITLE: Problèmes à un échantillon
+#+TITLE: Problèmes à un échantillon : paramètre de position
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -67,121 +67,15 @@ Sauf exception, nous supposerons que le variable X est continue.
     :PROPERTIES:
     :BEAMER_env: block
     :END:
-- $f_{x_i}$ : densité de la v.a $X_i$
+- $R_i$ : rang de $X_i$ dans l'échantillon ordonné $(X_{(1)}, ..., X_{(n)})$
+- $f_{x_i}$ : f.r de la v.a $X_i$
 - $F_{x_i}$ : f.r de la v.a $X_i$
-- $B(a, b) : \int_0^1 t^{a - 1} (1 - t)^{b - 1} dt$
-- $I_{x}(a, b)\ :\ \dfrac{1}{B(a, b)} \int_0^x t^{a - 1} (1 - t)^{b - 1} dt$ (fonction Béta incomplète) 
 
-* Tests d'indépendance
+* Tests du signe
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Tests d'indépendance 					    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
-
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
-
-** Corrélation de rang de Spearman : objectif 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
-
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
-
-** Corrélation de rang de Spearman : hypothèse 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
-
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
-
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-*** 								    :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-Le test de corrélation de rang de spearman permet de mesurer.
-\[
-r_s = \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}
-\]
-
-\[
-r_s =  1 - \frac{6}{n(n^2 - 1)}\sum_{i=1}^n(R_i - i)^2
-\]
-
-
-*** Code R 							    :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-
-
-
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
-
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
-
-** Corrélation de rang de Kendall 				    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-    
-    $$\tau = \displaystyle 1 - \frac{4Q}{n(n - 1)}$$
-    
-où 
-
-$$Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)$$
-
-** Corrélation de rang de Kendall : hypothèse 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
-
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
-
-** Corrélation de rang de Kendall : résolution 		    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
-
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
-
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
-
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
-
-* Tests sur paramètre de position
-#+LATEX:\begin{frame}{Plan}
-#+LATEX:\tableofcontents[currentsection]
-#+LATEX:\end{frame}
-** Tests sur paramètre de position 				    :B_frame:
-
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-    $$S_{n}^+ = \sum_{i = 1}^n1_{\mathbb{R}_{+}^*(X_i)}$$
-
-** Test du signe 						    :B_frame:
+** Test du signe : objectif 					    :B_frame:
 
    :PROPERTIES:
    :BEAMER_env: frame
@@ -213,7 +107,11 @@ Le test de corrélation de rang de spearman permet de mesurer.
 
 $$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
 
-** Test de Wilcoxon signé 					    :B_frame:
+* Tests de Wilcoxon signé
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Test de Wilcoxon signé : objectif 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:

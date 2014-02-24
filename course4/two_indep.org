@@ -1,4 +1,4 @@
-#+TITLE: Tests d'indépendance sur un échantillon
+#+TITLE: Tests d'indépendance sur deux échantillon
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -33,6 +33,7 @@
 * Introduction
 #+begin_src R :exports none :results silent :session
   library(Cairo)
+  library(plyr)
   mainfont <- "Minion Pro"
   CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
              bold = paste(mainfont, "style=Bold", sep=":"),
@@ -56,11 +57,11 @@
   - le test de coéfficient du corrélation de rang de Spearman
   - le test de coéfficient du corrélation de rang de Kendall
 
-* Coéfficient de corrélation de rang de Spearman
+* Test de Spearman
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+** Test de Spearman : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -68,57 +69,98 @@ Le but est de construire une procédure de test basée sur le coéfficient
 de corrélation de Pearson entre les couples de rangs ($R_i$, $i$)
 
 \[
-r_s = \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}
+S = \sum_{i=1}^n R_i Q_i
 \]
 
 Avec
+
 \[
-\bar{R} = \bar{i} = \frac{1}{n}\sum_{i = 1}^n i = \frac{n+1}{2} 
+R_i = \sum_{i=1}^n \mathrm{1}_{\mathbb{R}_+} (X_i - X_j)
 \]
 
 \[
-\sum_{i = 1}^n (R_i - \bar{R})^2 = \sum_{i = 1}^n (i - \bar{i})^2 = \frac{n(n^2 - 1)}{12}
+Q_i = \sum_{i=1}^n \mathrm{1}_{\mathbb{R}_+} (Y_i - Y_j)
 \]
 
-- Pour une tendance croissante on a $r_s = 1$
-- Pour une tendance décroissante on a $r_s = -1$
-
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+** Test de Spearman : résolution                    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 Les hypothèses sont les suivantes :
-- $H_0$ : les v.a $X_i$ sont indépendantes et de même loi $F$
+- $H_0$ : $X$ et $Y$ sont de même loi : $F = G$
 contre
-- $H_1$ : les v.a $X_i$ ont une dépendance quelconque
+- $H_1$ : $F \neq G$
 
-- On peut utiliser des alternatives plus précise :
-  - dépendance croissante
-  - dépendance décroissante
-- Les statistiques de tests seront basés sur les statisques de rang
+- On peut utiliser les alternatives suivantes aussi :
+  - $F < G$
+  - $F > G$
 
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+** Test de Spearman : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 La région de rejet $W$ est du type définie par :
-- ${r_s > c}$ : dépendance positive
-- ${r_s < c}$ : dépendance négative
-- ${|r_s| > c}$ : dépendance quelconque
+- ${S > s1}$ : dépendance positive
+- ${S < s2}$ : dépendance négative
+- ${S > s1 ou S < s2}$ : dépendance quelconque
 
-De plus sous $H_0$, la distribution de $r_s$ est symétrique et
-On peut montrer que (exercice)
+De plus sous $H_0$, la distribution de $S$ est symétrique autour de 
+sa moyenne :
 \[
-\mathbb{V}(r_s) = \frac{1}{n - 1}
+\mathbb{E}(S) = \sum_{i = 1}^n i \mathbb{E}(T_i) = \frac{n(n+1)^2}{4}
 \]
 
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+et sa variance est :
+\[
+\mathbb{V}(S) = \sum_{i = 1}^n \mathbb{V}(i T_i) = \frac{n^2(n+1)^2(n-1)}{144}
+\]
+
+** Test de Spearman : résolution 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t      
+   :END: 
+
+- Lorsque que l'on obtient un classement identique pour $X$ et $Y$ alors :   
+
+\[
+R_i = Q_i \Longrightarrow S_{max} = \sum_{i = 1} i^2 
+\]
+
+- Par opposition, lorsque les classements sont opposés  on :
+\[
+Q_i = n + 1 - R_i \Longrightarrow S_{min} = \sum_{i = 1} i (n + 1 - i)^2 
+\]
+
+** Test de Spearman : résolution 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t      
+   :END: 
+
+- Comme pour le cas univarié, la statistique de test peut 
+  s'écrire en fonction du coéfficient de corrélation de Pearson entre
+  $(R_i, Q_i)$. Cette statistique, est une function de $S$ : 
+
+\[
+r_s = \frac{1}{\sqrt{n - 1}} \frac{S - \mathbb{E}(S)}{\sigma(S)}
+\]
+
+\[
+r_s = 1 - \frac{6}{n (n^2 - 1)} \sum_{i = 1}^n (R_i - Qi)^2
+\]
+
+- $r_s$ est centré autour de son espérance qui est nulle.
+- $r_s$ est de variance $\dfrac{1}{n - 1}$
+- Pour la suite on posera : $\displaystyle D_i^2 = (R_i - Qi)^2$
+
+** Test de Spearman : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
 Sous $H_0$ : 
-- Pour $n$ grand ($n \longrightarrow +\infty$) : 
+- $S$ est asymptotiquement normale donc pour $n$ grand : 
 \[
 r_s \sqrt{n - 1} \longrightarrow \mathcal{N}(0, 1)
 \]
@@ -129,13 +171,13 @@ r_s \sqrt{n - 1} \longrightarrow \mathcal{N}(0, 1)
 r_s \sqrt{\frac{n - 2}{1 - r^2}} \simeq T_{n - 2}
 \]
 
-- Pour $n \leq 10$ :
-  La loi exacte de $r_s$ à été tabulée en se basant sur la statistique
+- On peut aussi construire la région critique à partir de 
 \[
-S = \sum_{i = 1}^n (R_i - i)
+S^* = \sum_{i = 1}^n D_i^2
 \]
-     
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+
+
+** Test de Spearman : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -162,113 +204,159 @@ alors
 \]
 avec $t_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $T_{n-2}$
 
+** Test de Spearman : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+*** Ex-aequo 							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+Soit $T_X$ (resp. $T_Y$) l'ensemble des groupes d'ex-aequo dans 
+l'échantillon $X$.
+Si nous avons $m$ ex-aequo aux rangs $k + 1, ..., k + m$ alors
+on les attribue tous le même rang :
+\[
+k + \frac{m + 1}{2}
+\]
+Donc on remplace les $m$ ex-aequo par la quantité $k + \dfrac{m + 1}{2}$.
 
-- Pour $n \leq  10$, on utilise la loi tabulée de $W_n+$ 
 
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Spearman : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+*** Ex-aequo 							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+En cas d'ex-aequo, alors la statistique $r_s$ est modifiée :
+\[
+r_s^* = \frac{1}{2 R^* Q^*}(R^{*2} + Q^{*2} - \sum_{i = 1}^n D_i^2)
+\]
+ 
+avec 
+- $\displaystyle R^{*2} = \frac{n(n^2 - 1)}{12} - \sum_{m \in T_X} \frac{m^3 - m}{12}$
+- $\displaystyle Q^{*2} = \frac{n(n^2 - 1)}{12} - \sum_{m \in T_Y} \frac{m^3 - m}{12}$
+
+** Test de Spearman : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+Il est possible de faire une analogie avec le test du coéfficient de corrélation de Spearman.
+Considerons, le couple de v.a $(X, Y)$ et soit $Z$ la v.a dont l'observation $Z_i$ est la réalisation de $Y$ associée à $X_{(i)}$. 
+
+
+
+** Test de Spearman : exemple 			     :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
 
+*** 								    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :BEAMER_col: 0.4   
+    :END:
 #+begin_src R :exports results 
-  df1 <- read.csv("../data/course3-data-0.csv") 
-str(df1 <-  transform(df1, i = seq_along(ozone), Ri = rank(ozone)))
+    df <- data.frame(X = c(1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 8, 12),
+                     Y = c(12, 16, 9, 7, 35, 58, 56, 26, 32, 59, 24, 51))
+  df
 #+end_src
 
 *** 								   :B_column:
     :PROPERTIES:
     :BEAMER_env: column
-    :BEAMER_col: 0.7
+    :BEAMER_col: 0.6
     :END:
-#+begin_src R :exports results :results graphics :file ../figures/course3-rank-1.pdf :height 4 
-  plot(ozone ~ heure, data = df1, pch = 19, cex = 0.3, type = "o", lwd
-  = 0.3, las = 1)
+#+begin_src R :exports results :results graphics :file ../figures/course4-spear-1.pdf :height 7.5 
+  boxplot(df$X, df$Y, xaxt = "n")
+  axis(1, at = c(1, 2), labels = c("X", "Y"))
   
 #+end_src
 
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df1)
-  p <- 0.05
-  rs <- with(df1, cor(Ri, i))
-  ST <- rs * sqrt((n - 2) / (1 - rs^2))
-  Ttheo <- qt(p = 1 - p, df = n - 2)
-  c(rs =rs, ST = ST, Ttheo = Ttheo)
-#+end_src
-
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  ST > Ttheo
-#+end_src
-
-On ne peut accepter l'hypothèse nulle au seuil de 5%
-    
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Spearman : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
-   
+
+
+#+begin_src R :exports code
+df <- mutate(df,
+      R = rank(X, ties.method = "average"),
+      Q = rank(Y, ties.method = "average"),
+      Di_sq = (R - Q)^2
+      )
+#+end_src
+
+
 #+begin_src R :exports results 
-  df2 <- read.csv("../data/course3-data-1.csv") 
-str(df2 <- transform(df2, i = seq_along(x), Ri = rank(x)))
+  df <- mutate(df,
+                R = rank(X, ties.method = "average"),
+                Q = rank(Y, ties.method = "average"),
+                Di_sq = (R - Q)^2
+                )
+  mat <- t(df)
+  colnames(mat) <- seq(nrow(df))
+  mat
 #+end_src
 
-*** 								   :B_column:
-    :PROPERTIES:
-    :BEAMER_env: column
-    :BEAMER_col: 0.75   
-    :END:
-#+begin_src R :exports results :results graphics :file ../figures/course3-rank-2.pdf :height 4
-  plot(x ~ i, data = df2, pch = 19, cex = 0.3, type = "o", lwd = 0.3, las = 1)
-#+end_src
-
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Spearman : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
+   :BEAMER_OPT: t
    :END:
 
 #+begin_src R :exports both
-  n <- nrow(df2)
-  p <- 0.05
-  rs <- with(df2, cor(Ri, i))
-  ST <- rs * sqrt((n - 2) / (1 - rs^2))
-  Ttheo <- qt(p = 1 - p, df = n - 2)
-  c(rs = rs, ST = ST, Ttheo = Ttheo)
+    f <- function(n) (n^3 - n) / 12
+    get_ties <- function(x) table(x)[table(x) > 1]
+    stat_test <- function(r_sq, q_sq, s) 
+      (r_sq + q_sq - s) / (2 * sqrt(r_sq * q_sq))
 #+end_src
 
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+#+begin_src R :exports both
+  n <- nrow(df)
+  R_star_sq <- f(n) - sum(f(get_ties(df$X)))
+  Q_star_sq <- f(n) - sum(f(get_ties(df$Y)))
+  S_star <- sum(df$Di_sq)
+  r_star <- stat_test(R_star_sq, Q_star_sq, S_star)
+  r_theo <- qt(p = 0.95, df = n - 2) * sqrt((1 - r_star) / (n - 2))
+  c(rs_star = rs_star, r_theo = r_theo, S_star)
+  
+#+end_src
+
+** Test de Spearman : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
+   :BEAMER_OPT: t
    :END:
 
 #+begin_src R :exports both
-  ST > Ttheo
+  rs_star > r_theo 
 #+end_src
 
-On ne peut rejetter l'hypothèse nulle au seuil de 5%
+On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ au seuil de 5%.
 
-*** 							       :B_alertblock:
-    :PROPERTIES:
-    :BEAMER_env: alertblock
-    :END:
-Donc le test de corrélation de rang de Spearman ne permet de détecter que l'existence
- d'une tendance /monotone/.
+** Test de Spearman : exemple 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
 
-* Coéfficient de corrélation de rang de Kendall
+
+#+begin_src R :exports both
+  cor.test(df$X, df$Y, method = "spearman", alternative = "greater")  
+#+end_src
+
+
+* Test de Kendall
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Kendall : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -288,25 +376,7 @@ Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)
 
 $Q$ permet alors de compter le nombre de fois où pour $i < j$ on a $X_i > X_j$.
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-- Le nombre maximal possible d'interversion pour un échantillon est égal au nombre 
-  de couple $(i, j)$ avec $i < j$ :    
-\[
-Q_{max} = C_n^2 = \frac{n(n-1)}{2}
-\]
-
-- Le nombre minimal possible d'inversion pour un échantillon est nul  
-\[
-Q_{min} = 0
-\]
-
-- La loi de $Q$ peut être obtenu par la fonction génératrice des moments
-
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Kendall : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -321,7 +391,7 @@ statistique $\tau$ définie par :
 - Pour un échantillon totalement inversé : $\tau = -1$
 - Pour un échantillon totalement ordonné : $\tau = 1$
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Kendall : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t      
@@ -344,21 +414,20 @@ Et donc
 \mathbb{V}(\tau) = \frac{2(2n + 5)}{9n(n - 1)}
 \]
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Kendall : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
 
 Sous $H_0$ et pour $n$ grand, la région de rejet est :
--  $\displaystyle {\tau > z_1 \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance positive
--  $\displaystyle {\tau < z_2 \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance négative
+-  $\displaystyle {\tau > z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance positive
+-  $\displaystyle {\tau < z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance négative
 -  $\displaystyle {|\tau| > z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance quelconque
 
-$z$, $z_1$, $z_2$ sont les quantiles de loi normale centrée réduite et dépendent de du niveau du test
-et son caractère (unilatéral, bilatéral)
+$z$ sont les quantiles de loi normale centrée réduite et dépendent de du niveau du test.
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Kendall : résolution 	            :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t      
@@ -381,7 +450,7 @@ avec
 S = Q - Q^{'}
 \]
 
-** Corrélation de rang de Kendall : résolution 		            :B_frame:
+** Test de Kendall : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -395,81 +464,177 @@ région de rejet suivante pour $n \leq 10$ :
 $s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau du test
   et son caractère (unilatéral, bilatéral)
 
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
+** Test de Kendall : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+Sous $H_0$, la loi de $S$ est tabulée donc ont peut définir les 
+région de rejet suivante pour $n \leq 10$ : 
+- ${S > s_1}$ : dépendance positive
+- ${S < s_2}$ : dépendance négative
+- ${|S| > s}$ : dépendance quelconque
+
+$s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau du test
+  et son caractère (unilatéral, bilatéral)
+
+# ** Test de Kendall : exemple 			    :B_frame:
+#    :PROPERTIES:
+#    :BEAMER_env: frame
+#    :END:
+
+# #+begin_src R -i :exports both 
+#   Q <- function(x) {
+#       n <- length(x)
+#       res <- numeric()
+#       for (i in seq(n - 1)) {
+#           for (j in (i-1):n) {
+#               res <- c(res, sum((x[i] - x[j]) > 0))
+#           }
+#       }
+#       sum(res)
+#   }
+#   x <- c(5, 7, 4, 8, 10, 2)
+#   Q(x)
+  
+# #+end_src
+   
+# ** Test de Kendall : exemple 			    :B_frame:
+#    :PROPERTIES:
+#    :BEAMER_env: frame
+#    :END:
+
+# #+begin_src R :exports both
+#   n <- nrow(df1)
+#   p <- 0.05 
+#   tau <- 1 - 4 * Q(df1$ozone) / (n * (n - 1))
+#   Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
+#   c(tau = tau, Ttheo = Ttheo)
+  
+# #+end_src
+
+# ** Test de Kendall : exemple 			    :B_frame:
+#    :PROPERTIES:
+#    :BEAMER_env: frame
+#    :END:
+
+# #+begin_src R :exports both
+#   abs(tau) > Ttheo
+# #+end_src
+
+# On ne peut accepter l'hypothèse nulle au seuil de 5%
+    
+# ** Test de Kendall : exemple 			    :B_frame:
+#    :PROPERTIES:
+#    :BEAMER_env: frame
+#    :END:
+
+# #+begin_src R :exports both
+#   n <- nrow(df2)
+#   p <- 0.05
+#   tau <- 1 - 4 * Q(df2$x) / (n * (n - 1))
+#   Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
+#   c(tau = tau, Ttheo = Ttheo)
+# #+end_src
+
+# ** Test de Kendall : exemple 			    :B_frame:
+#    :PROPERTIES:
+#    :BEAMER_env: frame
+#    :END:
+
+# #+begin_src R :exports both
+#   abs(tau) > Ttheo
+# #+end_src
+
+# On ne peut rejetter l'hypothèse nulle au seuil de 5%
+
+# *** 							       :B_alertblock:
+#     :PROPERTIES:
+#     :BEAMER_env: alertblock
+#     :END:
+# Comme le test de corrélation de Spearman, le test de corrélation de rang de Kendall
+#  ne permet de détecter que l'existence d'une tendance /monotone/.
+
+
+** Test de Kendall : exemple 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+#+begin_src R :exports both
+    f <- function(n) (n^3 - n) / 12
+    get_ties <- function(x) table(x)[table(x) > 1]
+    stat_test <- function(r_sq, q_sq, s) 
+      (r_sq + q_sq - s) / (2 * sqrt(r_sq * q_sq))
+#+end_src
+
+#+begin_src R :exports both
+  n <- nrow(df)
+  R_star_sq <- f(n) - sum(f(get_ties(df$X)))
+  Q_star_sq <- f(n) - sum(f(get_ties(df$Y)))
+  S_star <- sum(df$Di_sq)
+  r_star <- stat_test(R_star_sq, Q_star_sq, S_star)
+  r_theo <- qt(p = 0.95, df = n - 2) * sqrt((1 - r_star) / (n - 2))
+  c(rs_star = rs_star, r_theo = r_theo)  
+#+end_src
+
+** Test de Kendall : exemple 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+#+begin_src R :exports both
+  rs_star > r_theo 
+#+end_src
+
+On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ au seuil de 5%.
+
+** Test de Kendall : exemple 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
    :END:
 
 #+begin_src R -i :exports both 
-  Q <- function(x) {
-      n <- length(x)
-      res <- numeric()
-      for (i in seq(n - 1)) {
-          for (j in (i-1):n) {
-              res <- c(res, sum((x[i] - x[j]) > 0))
-          }
-      }
-      sum(res)
-  }
-  x <- c(5, 7, 4, 8, 10, 2)
-  Q(x)
+    Q <- function(x) {
+        n <- length(x)
+        res <- numeric()
+        for (i in seq(n - 1)) {
+            for (j in (i-1):n) {
+                res <- c(res, sum((x[i] - x[j]) > 0))
+            }
+        }
+        sum(res)
+    }
   
-#+end_src
-   
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df1)
-  p <- 0.05 
-  tau <- 1 - 4 * Q(df1$ozone) / (n * (n - 1))
-  Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
-  c(tau = tau, Ttheo = Ttheo)
   
+  Q_prim <- function(x) {
+        n <- length(x)
+        res <- numeric()
+        for (i in seq(n - 1)) {
+            for (j in (i-1):n) {
+                res <- c(res, sum((x[j] - x[i]) > 0))
+            }
+        }
+        sum(res)
+    }
 #+end_src
 
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
+** Test de Kendall : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
+   :BEAMER_OPT: t
    :END:
 
-#+begin_src R :exports both
-  abs(tau) > Ttheo
-#+end_src
-
-On ne peut accepter l'hypothèse nulle au seuil de 5%
-    
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
 
 #+begin_src R :exports both
-  n <- nrow(df2)
-  p <- 0.05
-  tau <- 1 - 4 * Q(df2$x) / (n * (n - 1))
-  Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
-  c(tau = tau, Ttheo = Ttheo)
+  cor.test(df$X, df$Y, method = "kendall", alternative = "greater")
+  df2 <- data.frame(x = c(12, 9, 14, 17), y = c(10, 14, 9, 13))
+  ti <- rank(arrange(df2, x)[,"y"])
+  Q_prim(ti) - Q(ti)
+  Q_prim(ti)
+  Q(ti)
+  1 - (4 * Q(ti) / (4 * (4 - 1)))
 #+end_src
-
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  abs(tau) > Ttheo
-#+end_src
-
-On ne peut rejetter l'hypothèse nulle au seuil de 5%
-
-*** 							       :B_alertblock:
-    :PROPERTIES:
-    :BEAMER_env: alertblock
-    :END:
-Comme le test de corrélation de Spearman, le test de corrélation de rang de Kendall
- ne permet de détecter que l'existence d'une tendance /monotone/.
-
 

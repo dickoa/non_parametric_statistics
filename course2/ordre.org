@@ -162,7 +162,7 @@ f_{T} =  n! \prod_{i = 1}^n f_{x_i} \mathrm{1}_{\{x_1 < ... < x_n\}}
 
 La densité de loi de la v.a X_{k:n} (ou X_{(k)}) 
 \[
-f_k(t) =  \dfrac{n!}{(k - 1)!(n - k)!} F^{k-1}(t)(1 - F^{n-k}(t))f(t)
+f_k(t) =  \dfrac{n!}{(k - 1)!(n - k)!} F^{k-1}(t)(1 - F(t))^{n-k}f(t)
 \]
 
 *** 								    :B_proof:

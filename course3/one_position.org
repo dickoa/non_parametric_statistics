@@ -1,4 +1,4 @@
-#+TITLE: Problèmes à un échantillon : paramètre de position
+#+TITLE: Paramètre de position
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -45,127 +45,247 @@
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Les statistiques d'ordre ont un rôle très important en statistique :
-- Estimation robuste des paramètres de position
-- Détection de valeurs abérantes
-- Modélisation des évènements extrêmes
-- Fiabilité et contrôle de qualité
+- Lorsque l'on dispose d'un échantillon, en plus d'analyser la relation de dépendance,
+  il est parfois utile de connaitre la /position/ de la distribution.
+- Il existe une famille de procédures qui permette de répondre à cette question.
+- Dans cette section deux tests sur /paramètre de position/ seront présentés :
+  - Le test du signe
+  - Le test de Wilcoxon signé
 
-** Convention 							    :B_frame:
+
+** Formalisation 						    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
-   :BEAMER_OPT: t
    :END:
-*** 								    :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-Soit $X$ une variable aléatoire de loi de probabilité de fonction de répartition $F$ à valeurs dans $\mathbb{R}$.
-Sauf exception, nous supposerons que le variable X est continue.
+- Le paramètre de position retenu est la médiane $\theta$ de l'échantillon
+- On suppose que $(X_1, ..., X_n)$ et de loi $F(x - \theta)$ avec $F(0) = \frac{1}{2}$
+- Le problème de test est le suivant :
 
-*** Notation 							    :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-- $R_i$ : rang de $X_i$ dans l'échantillon ordonné $(X_{(1)}, ..., X_{(n)})$
-- $f_{x_i}$ : f.r de la v.a $X_i$
-- $F_{x_i}$ : f.r de la v.a $X_i$
+\[
+ H_0 : \theta = 0\quad vs\quad H_1 : \theta > 0
+\]
 
-* Tests du signe
+- On peut aussi considérer d'autres alternatives ($\theta < 0$ ou $\theta \neq 0$)
+
+* Statistique linéaire de rang signée
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Test du signe : objectif 					    :B_frame:
-
+** Définition							    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
+Les problèmes de test de position utilisent en général la statistique de rang absolu  
+$R^+ = (R_1^+,..., R_n^+)$ avec :
 
-    $$S_{n}^+ = \sum_{i = 1}^n1_{\mathbb{R}_{+}^*(X_i)}$$
+\[
+R_i^+ = \sum_{i = 1}^n \mathrm{1}_{\mathbb{R}_+}(|X_i| - |X_j|), \quad 1 \leq i \leq n
+\]
 
-** Test du signe : hypothèse 					    :B_frame:
+$R^+$ permet de construire une famille de statistique linéaire de rang signée :
+
+\[
+S_n^+ = \sum_{i = 1}^n \mathrm{1}_{\mathbb{R}_+}(X_i)a_n(R_i^+)
+\]
+
+- Les $a_n(i)$ sont des scores croissants et non constants 
+
+** Théorème 1 							    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Le test de corrélation de rang de spearman permet de mesurer.
+Sous l'hypothèse nulle, $F$ est symétrique autour de la médianne et 
+la distribution de $S_n^+$ symétrique autour  de :
+\[
+\mathbb{E}(S_n^+) = \frac{1}{2} \sum_{i = 1}^n a_n(i)
+\]
 
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+La variance de $S_n^+$ est donnée par :
+
+\[
+\mathbb{V}(S_n+) = \frac{1}{4} \sum_{i = 1}^n a_n^2(i)
+\]
+
+De plus sous des conditions de régularité des scores $a_n(i)$ alors
+
+\[
+\frac{S_n^+ - \mathbb{E}(S_n+)}{\sigma(S_n+)} \longrightarrow \mathcal{N}(0, 1)
+\]
+
+* Test du signe
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
 
 ** Test du signe : résolution 					    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Le test de corrélation de rang de spearman permet de mesurer.
+La statistique de test est la suivante :
+\[
+S_n^+ = \sum_{i = 1}^n \mathrm{1}_{\mathbb{R}_+}(X_i)
+\]
 
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+Elle est construite à partir du score suivant :
+\[
+a_n(i) = \mathrm{1}_{]0, 1[}(\frac{i}{n + 1}), \quad 1 \leq i \leq n
+\]
+
+$S_n^+$ compte le nombre d'observation strictement positive dans l'échantillon
+
+** Test du signe : résolution 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Sous $H_0$ :
+
+\[
+S_n^+ \sim \mathcal{B}(n, \frac{1}{2})
+\]
+
+donc : 
+- $\displaystyle \mathbb{E}(S_n^+) = \frac{n}{2}$
+- $\displaystyle \mathbb{V}(S_n^+) = \frac{n}{4}$
+
+Et pour $n$ grand, nous avons la relation (en loi) asymptotique suivante :  
+
+\[
+\frac{S_n^+ - \frac{n}{2}}{\sqrt{\frac{n}{4}}} \longrightarrow \mathcal{N}(0, 1)
+\]
+
+** Test du signe : résolution 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Sous $H_0$ :
+
+Il s'agit d'un test optimal (U.P.P) sans biais donc la région critique est  
+\[
+W = \{S_n^+ \geq c\} 
+\]
+
+et de niveau $\alpha$
+
+\[
+\alpha = P(S_n^+ \geq c | H_0)
+\]
+
+L'approximation asymptotique (normale) permet d'obtenir la valeurs critiques c :
+
+\[
+c \simeq \frac{n}{2} + \frac{1}{2} + z\frac{\sqrt{n}}{2}
+\]
+
+avec $z$ le fractile d'ordre $1 - \alpha$ de $\mathcal{N}(0, 1)$
 
 ** Test du signe : exemple 					    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Le test de corrélation de rang de spearman permet de mesurer.
 
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
-
-* Tests de Wilcoxon signé
+* Test de Wilcoxon signé
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Test de Wilcoxon signé : objectif 				    :B_frame:
+** Test de Wilcoxon signé : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
+On suppose pour le reste que la distribution $F$ est symétrique ($F(-x) =  1 - F(x)$).
+\[
+W_{n}^+ = \sum_{i = 1}^nR_i^+\mathrm{1}_{\mathbb{R}_{+}(X_i)}
+\]
 
-    $$W_{n}^+ = \sum_{i = 1}^nR_i^+1_{\mathbb{R}_{+}^*(X_i)}$$
+Cette statistique est construite à partir du score :
 
-** Test du Wilcoxon signé : hypothèse 					    :B_frame:
+\[
+a_n(i) = i, \quad 1 \leq i \leq n
+\]
+
+Il s'agit de la somme des rangs signés ($R_i^+\mathrm{1}_{\mathbb{R}_{+}(X_i)}$)
+
+** Test de Wilcoxon signé : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Le test de corrélation de rang de spearman permet de mesurer.
+Sous $H_0$, $W_n+$ est symétrique autour de 
 
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+\[
+\mathbb{E}(W_n+) = \frac{n(n + 1)}{4}
+\]
 
-** Test du Wilcoxon signé : résolution 					    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
+De plus
 
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+\[
+\mathbb{V}(S_n+) = \frac{n(n+1)(2n+1)}{24}
+\]
 
-** Test du Wilcoxon signé : exemple 					    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Le test de corrélation de rang de spearman permet de mesurer.
+Et pour $n$ grand, on a l'approximation suivante (théorème 1):
 
-$$r_s = \displaystyle \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}$$
+\[
+\frac{W_n^+ - \mathbb{E}(W_n+)}{\sigma(W_n+)} \longrightarrow \mathcal{N}(0, 1)
+\]
 
-* Exercices
-#+LATEX:\begin{frame}{Plan}
-#+LATEX:\tableofcontents[currentsection]
-#+LATEX:\end{frame}
-** Exercices 							    :B_frame:
+** Test de Wicoxon signé : résolution
+Sous $H_0$ :
+
+Il s'agit d'un test optimal (U.P.P) sans biais donc la région critique est  
+\[
+W = \{W_n^+ \geq c\} 
+\]
+
+en posant 
+
+\[
+Z = \frac{W_n^+ - \mathbb{E}(W_n+)}{\sigma(W_n+)}
+\]
+
+alors
+\[
+\alpha = P(Z \geq z_{\alpha} | H_0)
+\]
+
+avec $z_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $\mathcal{N}(0, 1)$
+
+On note que pour de petite valeurs de $n$, la loi de $W_n+$ est tabulée.
+
+** Test de Wilcoxon signé : exemple 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
-*** 								    :B_block:
+
+#+begin_src R :exports results 
+  df3 <- read.table("../data/course3-data-2.txt", header = TRUE)
+  df3 <- df3[complete.cases(df3), ]
+  str(df3)
+#+end_src
+
+*** 								   :B_column:
     :PROPERTIES:
-    :BEAMER_env: block
+    :BEAMER_env: column
+    :BEAMER_col: 0.7
     :END:
+#+begin_src R :exports results :results graphics :file ../figures/course3-rank-1.pdf :height 4 
+  masse_grains <- with(df3, df3[parcelle == "Sud", "masse_grains"])
+  boxplot(masse_grains, pch = 19, cex = 0.8)
+  abline(h = 80, lty = "dashed", col = "red")
+  stripchart(masse_grains,
+             pch = 19,
+             cex = 0.8,
+             method = "jitter",
+             vertical = TRUE,
+             add = TRUE)
+  
+  
+#+end_src
 
+** Test de Wilcoxon signé : exemple 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
 
-*** 								    :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-
-
-*** 								    :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-
-
+#+begin_src R :exports both
+  wilcox.test(masse_grains, mu = 80)
+  
+#+end_src

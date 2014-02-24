@@ -1,4 +1,4 @@
-#+TITLE: Tests d'indépendance sur un échantillon
+#+TITLE: Échelle sur deux échantillons
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -56,11 +56,11 @@
   - le test de coéfficient du corrélation de rang de Spearman
   - le test de coéfficient du corrélation de rang de Kendall
 
-* Coéfficient de corrélation de rang de Spearman
+* Test de Savage
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+** Test de Savage : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -83,7 +83,7 @@ Avec
 - Pour une tendance croissante on a $r_s = 1$
 - Pour une tendance décroissante on a $r_s = -1$
 
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+** Test de Savage : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -97,7 +97,7 @@ contre
   - dépendance décroissante
 - Les statistiques de tests seront basés sur les statisques de rang
 
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+** Test de Savage : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -112,7 +112,7 @@ On peut montrer que (exercice)
 \mathbb{V}(r_s) = \frac{1}{n - 1}
 \]
 
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+** Test de Savage : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -135,7 +135,7 @@ r_s \sqrt{\frac{n - 2}{1 - r^2}} \simeq T_{n - 2}
 S = \sum_{i = 1}^n (R_i - i)
 \]
      
-** Corrélation de rang de Spearman : résolution 		    :B_frame:
+** Test de Savage : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -165,7 +165,7 @@ avec $t_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $T_{n-2}$
 
 - Pour $n \leq  10$, on utilise la loi tabulée de $W_n+$ 
 
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Savage : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -187,7 +187,7 @@ str(df1 <-  transform(df1, i = seq_along(ozone), Ri = rank(ozone)))
   
 #+end_src
 
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Savage : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -201,7 +201,7 @@ str(df1 <-  transform(df1, i = seq_along(ozone), Ri = rank(ozone)))
   c(rs =rs, ST = ST, Ttheo = Ttheo)
 #+end_src
 
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Savage : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -212,7 +212,7 @@ str(df1 <-  transform(df1, i = seq_along(ozone), Ri = rank(ozone)))
 
 On ne peut accepter l'hypothèse nulle au seuil de 5%
     
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Savage : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -232,7 +232,7 @@ str(df2 <- transform(df2, i = seq_along(x), Ri = rank(x)))
   plot(x ~ i, data = df2, pch = 19, cex = 0.3, type = "o", lwd = 0.3, las = 1)
 #+end_src
 
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Savage : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -246,7 +246,7 @@ str(df2 <- transform(df2, i = seq_along(x), Ri = rank(x)))
   c(rs = rs, ST = ST, Ttheo = Ttheo)
 #+end_src
 
-** Corrélation de rang de Spearman : exemple 			    :B_frame:
+** Test de Savage : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -261,20 +261,20 @@ On ne peut rejetter l'hypothèse nulle au seuil de 5%
     :PROPERTIES:
     :BEAMER_env: alertblock
     :END:
-Donc le test de corrélation de rang de Spearman ne permet de détecter que l'existence
+Donc le test de corrélation de rang de Savage ne permet de détecter que l'existence
  d'une tendance /monotone/.
 
-* Coéfficient de corrélation de rang de Kendall
+* Test de Ansari-Bradley
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Ansari-Bradley : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
     
 - Une alternative au test de corrélation de rang de Spearman est l'utilisation
-  du test corrélation de rang de Kendall.
+  du test corrélation de rang de Ansari-Bradley.
 -  L'idée de base est comparer l'échantillon naturel $(X_1, ..., X_n)$ et celui
    ordonné $(X_{(1)}, ..., X_{(n)})$ en remarquant que si la tendance est strictement monotone
    alors ces deux échantillons coincident.
@@ -288,7 +288,7 @@ Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)
 
 $Q$ permet alors de compter le nombre de fois où pour $i < j$ on a $X_i > X_j$.
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Ansari-Bradley : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t      
@@ -306,12 +306,12 @@ Q_{min} = 0
 
 - La loi de $Q$ peut être obtenu par la fonction génératrice des moments
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Ansari-Bradley : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 
-On appelle coefficient de corrélation de rang Kendall, la
+On appelle coefficient de corrélation de rang Mann et Whitney, la
 statistique $\tau$ définie par :
 \[
 \tau = 1 - \frac{4Q}{n(n - 1)}
@@ -321,7 +321,7 @@ statistique $\tau$ définie par :
 - Pour un échantillon totalement inversé : $\tau = -1$
 - Pour un échantillon totalement ordonné : $\tau = 1$
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Ansari-Bradley : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t      
@@ -344,7 +344,7 @@ Et donc
 \mathbb{V}(\tau) = \frac{2(2n + 5)}{9n(n - 1)}
 \]
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Ansari-Bradley : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -358,7 +358,7 @@ Sous $H_0$ et pour $n$ grand, la région de rejet est :
 $z$, $z_1$, $z_2$ sont les quantiles de loi normale centrée réduite et dépendent de du niveau du test
 et son caractère (unilatéral, bilatéral)
 
-** Corrélation de rang de Kendall : résolution 			    :B_frame:
+** Test de Ansari-Bradley : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t      
@@ -381,7 +381,7 @@ avec
 S = Q - Q^{'}
 \]
 
-** Corrélation de rang de Kendall : résolution 		            :B_frame:
+** Test de Ansari-Bradley : résolution 		            :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -395,7 +395,7 @@ région de rejet suivante pour $n \leq 10$ :
 $s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau du test
   et son caractère (unilatéral, bilatéral)
 
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
+** Test de Ansari-Bradley : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -416,7 +416,7 @@ $s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau
   
 #+end_src
    
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
+** Test de Ansari-Bradley : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -430,7 +430,7 @@ $s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau
   
 #+end_src
 
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
+** Test de Ansari-Bradley : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -441,7 +441,7 @@ $s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau
 
 On ne peut accepter l'hypothèse nulle au seuil de 5%
     
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
+** Test de Ansari-Bradley : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -454,7 +454,7 @@ On ne peut accepter l'hypothèse nulle au seuil de 5%
   c(tau = tau, Ttheo = Ttheo)
 #+end_src
 
-** Corrélation de rang de Kendall : exemple 			    :B_frame:
+** Test de Ansari-Bradley : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -469,7 +469,8 @@ On ne peut rejetter l'hypothèse nulle au seuil de 5%
     :PROPERTIES:
     :BEAMER_env: alertblock
     :END:
-Comme le test de corrélation de Spearman, le test de corrélation de rang de Kendall
+Comme le test de corrélation de Spearman, le test de corrélation de rang de Ansari-Bradley
  ne permet de détecter que l'existence d'une tendance /monotone/.
+
 
 

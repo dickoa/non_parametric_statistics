@@ -168,101 +168,15 @@ avec $t_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $T_{n-2}$
 ** Test de Kolmogorov-Smirnov : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
-   :BEAMER_OPT: t
    :END:
 
-#+begin_src R :exports results 
-  df1 <- read.csv("../data/course3-data-0.csv") 
-str(df1 <-  transform(df1, i = seq_along(ozone), Ri = rank(ozone)))
+#+begin_src R
+  set.seed(123)
+  X <- rnorm(100, mean = 10, sd = 5)
+  Y <- rlnorm(100, meanlog = 3, sdlog = 2)
+  ks.test(X, Y)
 #+end_src
 
-*** 								   :B_column:
-    :PROPERTIES:
-    :BEAMER_env: column
-    :BEAMER_col: 0.7
-    :END:
-#+begin_src R :exports results :results graphics :file ../figures/course3-rank-1.pdf :height 4 
-  plot(ozone ~ heure, data = df1, pch = 19, cex = 0.3, type = "o", lwd
-  = 0.3, las = 1)
-  
-#+end_src
-
-** Test de Kolmogorov-Smirnov : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df1)
-  p <- 0.05
-  rs <- with(df1, cor(Ri, i))
-  ST <- rs * sqrt((n - 2) / (1 - rs^2))
-  Ttheo <- qt(p = 1 - p, df = n - 2)
-  c(rs =rs, ST = ST, Ttheo = Ttheo)
-#+end_src
-
-** Test de Kolmogorov-Smirnov : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  ST > Ttheo
-#+end_src
-
-On ne peut accepter l'hypothèse nulle au seuil de 5%
-    
-** Test de Kolmogorov-Smirnov : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-   
-#+begin_src R :exports results 
-  df2 <- read.csv("../data/course3-data-1.csv") 
-str(df2 <- transform(df2, i = seq_along(x), Ri = rank(x)))
-#+end_src
-
-*** 								   :B_column:
-    :PROPERTIES:
-    :BEAMER_env: column
-    :BEAMER_col: 0.75   
-    :END:
-#+begin_src R :exports results :results graphics :file ../figures/course3-rank-2.pdf :height 4
-  plot(x ~ i, data = df2, pch = 19, cex = 0.3, type = "o", lwd = 0.3, las = 1)
-#+end_src
-
-** Test de Kolmogorov-Smirnov : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df2)
-  p <- 0.05
-  rs <- with(df2, cor(Ri, i))
-  ST <- rs * sqrt((n - 2) / (1 - rs^2))
-  Ttheo <- qt(p = 1 - p, df = n - 2)
-  c(rs = rs, ST = ST, Ttheo = Ttheo)
-#+end_src
-
-** Test de Kolmogorov-Smirnov : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  ST > Ttheo
-#+end_src
-
-On ne peut rejetter l'hypothèse nulle au seuil de 5%
-
-*** 							       :B_alertblock:
-    :PROPERTIES:
-    :BEAMER_env: alertblock
-    :END:
-Donc le test de corrélation de rang de Kolmogorov-Smirnov ne permet de détecter que l'existence
- d'une tendance /monotone/.
 
 * Test de Cramer-von Mises
 #+LATEX:\begin{frame}{Plan}
@@ -400,75 +314,12 @@ $s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau
    :BEAMER_env: frame
    :END:
 
-#+begin_src R -i :exports both 
-  Q <- function(x) {
-      n <- length(x)
-      res <- numeric()
-      for (i in seq(n - 1)) {
-          for (j in (i-1):n) {
-              res <- c(res, sum((x[i] - x[j]) > 0))
-          }
-      }
-      sum(res)
-  }
-  x <- c(5, 7, 4, 8, 10, 2)
-  Q(x)
+#+begin_src R :exports both 
+  library(cramer)
+  set.seed(123)
+  X <- rnorm(100, mean = 10, sd = 5)
+  Y <- rlnorm(100, meanlog = 3, sdlog = 2)
+  cramer.test(X, Y)
   
 #+end_src
    
-** Test de Cramer-von Mises : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df1)
-  p <- 0.05 
-  tau <- 1 - 4 * Q(df1$ozone) / (n * (n - 1))
-  Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
-  c(tau = tau, Ttheo = Ttheo)
-  
-#+end_src
-
-** Test de Cramer-von Mises : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  abs(tau) > Ttheo
-#+end_src
-
-On ne peut accepter l'hypothèse nulle au seuil de 5%
-    
-** Test de Cramer-von Mises : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df2)
-  p <- 0.05
-  tau <- 1 - 4 * Q(df2$x) / (n * (n - 1))
-  Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
-  c(tau = tau, Ttheo = Ttheo)
-#+end_src
-
-** Test de Cramer-von Mises : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  abs(tau) > Ttheo
-#+end_src
-
-On ne peut rejetter l'hypothèse nulle au seuil de 5%
-
-*** 							       :B_alertblock:
-    :PROPERTIES:
-    :BEAMER_env: alertblock
-    :END:
-Comme le test de corrélation de Spearman, le test de corrélation de rang de Cramer-von Mises
- ne permet de détecter que l'existence d'une tendance /monotone/.
-

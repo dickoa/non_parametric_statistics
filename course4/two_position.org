@@ -33,6 +33,7 @@
 * Introduction
 #+begin_src R :exports none :results silent :session
   library(Cairo)
+  library(plyr)
   mainfont <- "Minion Pro"
   CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
              bold = paste(mainfont, "style=Bold", sep=":"),
@@ -64,24 +65,10 @@
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Le but est de construire une procédure de test basée sur le coéfficient
-de corrélation de Pearson entre les couples de rangs ($R_i$, $i$)
 
 \[
-r_s = \frac{\sum_{i=1}^n(R_i - \bar{R})(i - \bar{i})}{\sqrt{\sum_{i=1}^n(R_i - \bar{R})^2\sum_{i=1}^n(i - \bar{i})}}
+W = \sum_{i = 1}^m R_i
 \]
-
-Avec
-\[
-\bar{R} = \bar{i} = \frac{1}{n}\sum_{i = 1}^n i = \frac{n+1}{2} 
-\]
-
-\[
-\sum_{i = 1}^n (R_i - \bar{R})^2 = \sum_{i = 1}^n (i - \bar{i})^2 = \frac{n(n^2 - 1)}{12}
-\]
-
-- Pour une tendance croissante on a $r_s = 1$
-- Pour une tendance décroissante on a $r_s = -1$
 
 ** Test de Wilcoxon : résolution 		    :B_frame:
    :PROPERTIES:
@@ -165,310 +152,101 @@ avec $t_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $T_{n-2}$
 
 - Pour $n \leq  10$, on utilise la loi tabulée de $W_n+$ 
 
-** Test de Wilcoxon : exemple 			    :B_frame:
+** Test de Wilcoxon : exemple 					    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
 
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_col: 0.4   
+    :BEAMER_env: block
+    :END:
 #+begin_src R :exports results 
-  df1 <- read.csv("../data/course3-data-0.csv") 
-str(df1 <-  transform(df1, i = seq_along(ozone), Ri = rank(ozone)))
+  X <- c(980, 1305, 906, 1140, 1130, 1080, 1090, 1270, 1250, 1100)
+  Y <- c(900, 1245, 910, 1220, 1010, 990, 1030, 1170, 1200, 1060)
+  df <- data.frame(X, Y)
+  df
 #+end_src
 
 *** 								   :B_column:
     :PROPERTIES:
     :BEAMER_env: column
-    :BEAMER_col: 0.7
+    :BEAMER_col: 0.6
     :END:
-#+begin_src R :exports results :results graphics :file ../figures/course3-rank-1.pdf :height 4 
-  plot(ozone ~ heure, data = df1, pch = 19, cex = 0.3, type = "o", lwd
-  = 0.3, las = 1)
+#+begin_src R :exports results :results graphics :file ../figures/course4-spear-1.pdf :height 7 
+  boxplot(X, Y, xaxt = "n")
+  axis(1, at = c(1, 2), labels = c("X", "Y"))
   
 #+end_src
 
 ** Test de Wilcoxon : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
+   :BEAMER_OPT: t
    :END:
 
-#+begin_src R :exports both
-  n <- nrow(df1)
-  p <- 0.05
-  rs <- with(df1, cor(Ri, i))
-  ST <- rs * sqrt((n - 2) / (1 - rs^2))
-  Ttheo <- qt(p = 1 - p, df = n - 2)
-  c(rs =rs, ST = ST, Ttheo = Ttheo)
+
+#+begin_src R :exports code
+  n <- length(X)
+  m <- length(Y)
+  R_x <- rank(c(X, Y), ties.method = "average")[1:n]  
+  R_y <- rank(c(X, Y), ties.method = "average")[(n + 1):(m + n)]  
 #+end_src
 
-** Test de Wilcoxon : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
 
-#+begin_src R :exports both
-  ST > Ttheo
+#+begin_src R :exports results
+  n <- length(X)
+  m <- length(Y)
+  R_x <- rank(c(X, Y), ties.method = "average")[1:n]  
+  R_y <- rank(c(X, Y), ties.method = "average")[(n + 1):(m + n)]
+  df <- mutate(df, R_x = R_x, R_y = R_y)
+  mat <- t(df)
+  colnames(mat) <- seq(nrow(df))
+  mat
 #+end_src
 
-On ne peut accepter l'hypothèse nulle au seuil de 5%
-    
 ** Test de Wilcoxon : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
+
+#+begin_src R :exports both
+  p <- 0.05
+  W <- sum(R_x)
+  N <- m + n
+  E_W <- m * (N + 1) / 2
+  V_W <- (m * n * (m + n + 1)) / 12
+  U <- (W - E_W - 0.5) / sqrt(V_W)
+  z_theo <- qnorm(p = 1 - p/2)
+  c(W = W, U = U, z_theo = z_theo)
+#+end_src
+
+** Test de Wilcoxon : exemple 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+#+begin_src R :exports both
+  abs(U) > z_theo
+#+end_src
+
+On ne peut rejetter l'hypothèse nulle de dépendance quelconque entre $X$ et $Y$ au seuil de 5%.
+
+** Test de Wilcoxon : exemple 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+
+#+begin_src R :exports both
+  wilcox.test(X, Y)  ## W - (m * (m + 1)) / 2  
+#+end_src
+
+
+
    
-#+begin_src R :exports results 
-  df2 <- read.csv("../data/course3-data-1.csv") 
-str(df2 <- transform(df2, i = seq_along(x), Ri = rank(x)))
-#+end_src
-
-*** 								   :B_column:
-    :PROPERTIES:
-    :BEAMER_env: column
-    :BEAMER_col: 0.75   
-    :END:
-#+begin_src R :exports results :results graphics :file ../figures/course3-rank-2.pdf :height 4
-  plot(x ~ i, data = df2, pch = 19, cex = 0.3, type = "o", lwd = 0.3, las = 1)
-#+end_src
-
-** Test de Wilcoxon : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df2)
-  p <- 0.05
-  rs <- with(df2, cor(Ri, i))
-  ST <- rs * sqrt((n - 2) / (1 - rs^2))
-  Ttheo <- qt(p = 1 - p, df = n - 2)
-  c(rs = rs, ST = ST, Ttheo = Ttheo)
-#+end_src
-
-** Test de Wilcoxon : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  ST > Ttheo
-#+end_src
-
-On ne peut rejetter l'hypothèse nulle au seuil de 5%
-
-*** 							       :B_alertblock:
-    :PROPERTIES:
-    :BEAMER_env: alertblock
-    :END:
-Donc le test de corrélation de rang de Wilcoxon ne permet de détecter que l'existence
- d'une tendance /monotone/.
-
-* Test de Mann et Whitney
-#+LATEX:\begin{frame}{Plan}
-#+LATEX:\tableofcontents[currentsection]
-#+LATEX:\end{frame}
-** Test de Mann et Whitney : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-    
-- Une alternative au test de corrélation de rang de Spearman est l'utilisation
-  du test corrélation de rang de Mann et Whitney.
--  L'idée de base est comparer l'échantillon naturel $(X_1, ..., X_n)$ et celui
-   ordonné $(X_{(1)}, ..., X_{(n)})$ en remarquant que si la tendance est strictement monotone
-   alors ces deux échantillons coincident.
-- La construction de ce test est basée sur une mesure du nombre d'interversions par
-  rapport à l'ordre d'observation.
-- Il s'agit alors de construire une statistique basée sur : 
-
-\[
-Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)
-\]
-
-$Q$ permet alors de compter le nombre de fois où pour $i < j$ on a $X_i > X_j$.
-
-** Test de Mann et Whitney : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-- Le nombre maximal possible d'interversion pour un échantillon est égal au nombre 
-  de couple $(i, j)$ avec $i < j$ :    
-\[
-Q_{max} = C_n^2 = \frac{n(n-1)}{2}
-\]
-
-- Le nombre minimal possible d'inversion pour un échantillon est nul  
-\[
-Q_{min} = 0
-\]
-
-- La loi de $Q$ peut être obtenu par la fonction génératrice des moments
-
-** Test de Mann et Whitney : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-On appelle coefficient de corrélation de rang Mann et Whitney, la
-statistique $\tau$ définie par :
-\[
-\tau = 1 - \frac{4Q}{n(n - 1)}
-\]
-
-- avec $Q$ défini plus haut
-- Pour un échantillon totalement inversé : $\tau = -1$
-- Pour un échantillon totalement ordonné : $\tau = 1$
-
-** Test de Mann et Whitney : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-\[
-\mathbb{E}(Q) = \frac{n(n-1)}{4}
-\]
-
-\[
-\mathbb{V}(Q) = \frac{n(n-1)(2n + 5)}{72}
-\]
-
-Et donc
-
-\[
-\mathbb{E}(\tau) = 0
-\]
-
-\[
-\mathbb{V}(\tau) = \frac{2(2n + 5)}{9n(n - 1)}
-\]
-
-** Test de Mann et Whitney : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-
-Sous $H_0$ et pour $n$ grand, la région de rejet est :
--  $\displaystyle {\tau > z_1 \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance positive
--  $\displaystyle {\tau < z_2 \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance négative
--  $\displaystyle {|\tau| > z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance quelconque
-
-$z$, $z_1$, $z_2$ sont les quantiles de loi normale centrée réduite et dépendent de du niveau du test
-et son caractère (unilatéral, bilatéral)
-
-** Test de Mann et Whitney : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-Soit 
-
-\[
-Q^{'} = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_j - X_i)
-\]
-
-Pour $n \leq 10$, on peut montrer (exercice) que 
-
-\[
-\tau = \frac{S}{C_n^2}
-\]
-
-avec 
-
-\[
-S = Q - Q^{'}
-\]
-
-** Test de Mann et Whitney : résolution 		            :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-Sous $H_0$, la loi de $S$ est tabulée donc ont peut définir les 
-région de rejet suivante pour $n \leq 10$ : 
-- ${S > s_1}$ : dépendance positive
-- ${S < s_2}$ : dépendance négative
-- ${|S| > s}$ : dépendance quelconque
-
-$s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau du test
-  et son caractère (unilatéral, bilatéral)
-
-** Test de Mann et Whitney : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R -i :exports both 
-  Q <- function(x) {
-      n <- length(x)
-      res <- numeric()
-      for (i in seq(n - 1)) {
-          for (j in (i-1):n) {
-              res <- c(res, sum((x[i] - x[j]) > 0))
-          }
-      }
-      sum(res)
-  }
-  x <- c(5, 7, 4, 8, 10, 2)
-  Q(x)
-  
-#+end_src
-   
-** Test de Mann et Whitney : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df1)
-  p <- 0.05 
-  tau <- 1 - 4 * Q(df1$ozone) / (n * (n - 1))
-  Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
-  c(tau = tau, Ttheo = Ttheo)
-  
-#+end_src
-
-** Test de Mann et Whitney : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  abs(tau) > Ttheo
-#+end_src
-
-On ne peut accepter l'hypothèse nulle au seuil de 5%
-    
-** Test de Mann et Whitney : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  n <- nrow(df2)
-  p <- 0.05
-  tau <- 1 - 4 * Q(df2$x) / (n * (n - 1))
-  Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
-  c(tau = tau, Ttheo = Ttheo)
-#+end_src
-
-** Test de Mann et Whitney : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  abs(tau) > Ttheo
-#+end_src
-
-On ne peut rejetter l'hypothèse nulle au seuil de 5%
-
-*** 							       :B_alertblock:
-    :PROPERTIES:
-    :BEAMER_env: alertblock
-    :END:
-Comme le test de corrélation de Spearman, le test de corrélation de rang de Mann et Whitney
- ne permet de détecter que l'existence d'une tendance /monotone/.
-

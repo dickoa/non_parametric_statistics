@@ -1,4 +1,4 @@
-#+TITLE: Tests d'indépendance sur deux échantillon
+#+TITLE: Tests d'indépendance sur deux échantillons
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -48,7 +48,7 @@
    :BEAMER_env: frame
    :END:
 
-- Les procédures non paramétrique permettent de tester la structure de la dépendence
+- Les procédures non paramétriques permettent de tester la structure de la dépendence
   au sein d'échantillon.
 - Il est cependant possible de procéder à la comparaison d'échantillons issuent de 
   populations différentes.
@@ -65,8 +65,8 @@
    :END:
 
 - Dans cette section, nous allons nous intéresser aux tests d'indépendances afin d'analyser
-  les relation de dépendance entre deux v.a.
-- Il existe de nombreuses procédures qui permettent de réaliser de tels comparaison.
+  la relation de dépendance entre deux v.a.
+- Il existe de nombreuses procédures qui permettent de réaliser de tels comparaisons.
 - Dans cette section, deux tests d'hypothèse seront présentés afin de répondre à ces questions :
   - le test de Spearman
   - le test de Kendall
@@ -431,11 +431,11 @@ On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ 
 - La statistique de test est basée sur une v.a $V$ dont les caractéristiques sont les suivantes :
   - A chaque couple $(T_i,T_j)$ avec $i < j$ prends $1$
     si il y a pas concordance $(T_i < T_j)$
-  - A chaque couple $(T_i,T_j)$ avec $i < j$ prends $1$
+  - A chaque couple $(T_i,T_j)$ avec $i < j$ prends $-1$
     si il y a inversion $(T_i > T_j)$
 - Pour tout les couples sur un échantillons de taille $n$, nous avons $C_n^2$ 
   valeurs ($V\ \in \{-1, 1\}$). En notans $S$ la somme des réalisations de la v.a $V$ 
-  alors on peut le $\tau$ de Kendall par :
+  alors le $\tau$ de Kendall est défini par :
 \[
 \tau = \frac{S}{C_n^2}
 \]
@@ -446,7 +446,7 @@ On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ 
    :END:
 La statistique $S$ peut être utilisé pour construire le test.
 Sous $H_0$, la loi de $S$ est tabulée donc ont peut définir les 
-région de rejet suivante pour $n \leq 10$ : 
+régions de rejet suivantes pour $n \leq 10$ : 
 - ${S > s_1}$ : dépendance positive
 - ${S < s_2}$ : dépendance négative
 - ${S > s_1\ ou\ S < s_2}$ : dépendance quelconque

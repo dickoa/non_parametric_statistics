@@ -1,4 +1,4 @@
-#+TITLE: Position sur deux échantillons
+#+TITLE: Tests sur paramètre sur de position pour deux échantillons
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -47,15 +47,44 @@
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-- Lorsque l'on dispose d'un échantillon qui décrit un phénomène donné, il est 
-  important de s'intérroger sur le caractère aléatoire des observations.
-- Lors de l'étude de série temporelle, une question cruciale est de savoir si les données
-  suivent une tendance précise.
-- On peut dès lors de procéder à un test /d'échantillon aléatoire/ afin de savoir
-  si les fluctuations de l'échantillon sont aléatoires ou déterminées ?
-- Deux tests d'hypothèse seront présentés afin de répondre à ces questions :
-  - le test de coéfficient du corrélation de rang de Spearman
-  - le test de coéfficient du corrélation de rang de Kendall
+
+- Soit $\theta \in \mathbb{R}$ un paramètre de position.
+- On supposera par la suite que $F_y(x) = F_x(x - \theta) \forall x \in \mathbb{R}$
+- Il est possible de comparer la distribution en utilisant le paramètre
+  de positition $\theta$ (typiquement la médiane).
+- Les hypothèses sont alors les suivantes
+- $H_0\ :\ \theta = 0$ : égalité entre $X$ et $Y$
+- $H_1\ :\ \theta \neq 0$ : $X$ différent de $Y$
+
+Les hypothèses alternatives suivantes peuvent aussi être considéré :
+- $H_1\ :\ \theta > 0$ : $X$ stochastiquement supérieur à $Y$
+- $H_1\ :\ \theta < 0$ : $X$ stochastiquement inférieur à $Y$
+
+** Introduction 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+- Soit $X$ et $Y$ deux v.a dont les échantillons peuvent être de taille différentes
+- Les procédures de test sur paramètre de distribution seront basées sur
+  une famille de statistiques linéaires de rang particulières de la forme :
+
+\[
+S_N = \sum_{i = 1}^m a_N(R_i)
+\]
+
+- $R_i$ est le rang de $X_i$ dans l'échantillon $Z = (X_1, ..., X_m, Y_1, ..., Y_n)$ et on a $N = n + m$  
+- les score $a_N$ sont croissants, non constant et construit à partir de fonction mesurable à valeurs dans $]0,\ 1[$
+
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Dans cette partie, nous présenterons deux tests de la même famille :
+  - Le test de Wilcoxon
+  - Le test de Mann-Whitney
 
 * Test de Wilcoxon
 #+LATEX:\begin{frame}{Plan}
@@ -65,92 +94,45 @@
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
+La statistique de test corresponds à la statistique linéaire de rang avec
+avec $a_N(i) = i, \forall 1\leq i \leq N$
 
 \[
-W = \sum_{i = 1}^m R_i
+W_N = \sum_{i = 1}^m R_i
 \]
+
+Avec :
+- $\displaystyle \mathbb{E}(W_N) = m \frac{m + n + 1}{2}$
+- $\displaystyle \mathbb{V}(W_N) = m n \frac{m + n + 1}{12}$
 
 ** Test de Wilcoxon : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Les hypothèses sont les suivantes :
-- $H_0$ : les v.a $X_i$ sont indépendantes et de même loi $F$
-contre
-- $H_1$ : les v.a $X_i$ ont une dépendance quelconque
+Sous $H_0$, $W_N$ est symétrique autour de sa moyenne et on a les
+régions critiques suivantes :
 
-- On peut utiliser des alternatives plus précise :
-  - dépendance croissante
-  - dépendance décroissante
-- Les statistiques de tests seront basés sur les statisques de rang
+- ${W_N\ \geq\ s_1}$ : ${\theta\ >\ 0}$ : dépendance positive
+- ${W_N\ \leq\ s_2}$ : ${\theta\ <\ 0}$ : dépendance négative
+- ${W_N\ \geq\ s_1\ ou\ W_N\ \leq\ s_2}$ : ${\theta\ \neq\ 0}$ : dépendance positive
 
 ** Test de Wilcoxon : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-La région de rejet $W$ est du type définie par :
-- ${r_s > c}$ : dépendance positive
-- ${r_s < c}$ : dépendance négative
-- ${|r_s| > c}$ : dépendance quelconque
+Sous $H_0$ :
+- Pour de petites valeurs de $N$ les valeurs critiques 
+  $s_1$ et $s_2$ sont tabulé.
+- Pour $N > 30$ on peut utiliser l'approximation normale en considérant
+  la v.a U :
+   \[
+   U = \frac{W_N - \mathbb{E}(W_N) - \frac{1}{2}}{\sigma(W_N)}
+   \]
 
-De plus sous $H_0$, la distribution de $r_s$ est symétrique et
-On peut montrer que (exercice)
-\[
-\mathbb{V}(r_s) = \frac{1}{n - 1}
-\]
-
-** Test de Wilcoxon : résolution 		    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-Sous $H_0$ : 
-- Pour $n$ grand ($n \longrightarrow +\infty$) : 
-\[
-r_s \sqrt{n - 1} \longrightarrow \mathcal{N}(0, 1)
-\]
-
-- Pour $11 \leq n \leq 30$ : 
-
-\[
-r_s \sqrt{\frac{n - 2}{1 - r^2}} \simeq T_{n - 2}
-\]
-
-- Pour $n \leq 10$ :
-  La loi exacte de $r_s$ à été tabulée en se basant sur la statistique
-\[
-S = \sum_{i = 1}^n (R_i - i)
-\]
-     
-** Test de Wilcoxon : résolution 		    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-- Pour $n$ grand on a :
-\[
-Z = r_s \sqrt{n - 1}
-\]
-
-alors
-\[
-\alpha = P(Z \geq z_{\alpha} | H_0)
-\]
-
-avec $z_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $\mathcal{N}(0, 1)$
-
-- Pour $n$ entre $11$ et $30$, on peut utiliser la statistique suivante
-\[
-T = r_s \sqrt{\frac{n - 2}{1 - r^2}}
-\]
-alors
-\[
-\alpha = P(T \geq t_{\alpha} | H_0)
-\]
-avec $t_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $T_{n-2}$
+- $U \sim \mathcal{N}(0, 1)$ donc on utilise les valeurs critiques de
+  la loi normale centrée réduite pour résoudre le problème de test.
 
 
-- Pour $n \leq  10$, on utilise la loi tabulée de $W_n+$ 
 
 ** Test de Wilcoxon : exemple 					    :B_frame:
    :PROPERTIES:
@@ -236,17 +218,96 @@ avec $t_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $T_{n-2}$
 
 On ne peut rejetter l'hypothèse nulle de dépendance quelconque entre $X$ et $Y$ au seuil de 5%.
 
-** Test de Wilcoxon : exemple 			    :B_frame:
+* Test de Mann-Whitney
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Test de Mann-Whitney : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+- Le test de Mann-Whitney encore appelé Wilcoxon Mann-Whitney est basé sur le test 
+  Wilcoxon.
+- Soit $W_N$, la statistique du test de Wilcoxon, alors la statistique de Mann-Whitney
+  $U_N$ est définie par :
+
+\[
+U_N = W_N - \frac{m(m + 1)}{2}
+\]
+
+- $\displaystyle \mathbb{E}(U_N) = \frac{mn}{2}$
+
+** Test de Mann-Whitney : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+- On peut montrer (exercice) que  :
+
+\[
+U_N = \sum_{i = 1}^m\sum_{j = 1}^n\mathrm{1}_{\mathbb{R^+}}(X_i - Y_j)
+\]
+
+Donc $U_N$ compte le nombre de fois où un $X$ est plus grand qu'un $Y$.
+De plus il s'agit de la statistique du signe calculée sur les $mn$ différences $(X_i - Y_j)$.
+
+** Test de Wilcoxon : résolution 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Sous $H_0$, $U_N$ est symétrique autour de sa moyenne et on a les
+régions critiques suivantes :
+
+- ${U_N\ \geq\ c}$ : ${\theta\ >\ 0}$ : dépendance positive
+- ${U_N\ \leq\ mn-c}$ : ${\theta\ <\ 0}$ : dépendance négative
+- ${U_N\ \geq\ c\ ou\ W_N\ \leq\ mn - c}$ : ${\theta\ \neq\ 0}$ : dépendance positive
+
+Pour les petites valeurs de $N$, la loi de $U_N$ est tabulé et on considère l'approximation
+normale pour de grands échantillons ($N > 30$) 
+
+** Test de Mann-Whitney : exemple 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
    :END:
 
-
 #+begin_src R :exports both
-  wilcox.test(X, Y)  ## W - (m * (m + 1)) / 2  
+  wilcox.test(X, Y) 
 #+end_src
 
+** Test de Mann-Whitney : exemple 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+On peut vérifier la relation entre $U_N$ et $W_N$ :
+
+\[
+U_N = W_N - \frac{m(m + 1)}{2}
+\]
 
 
-   
+#+begin_src R :exports both
+  wilcox.test(X, Y)$statistic ==  W - (m * (m + 1)) / 2  
+#+end_src
+
+* Cas des séries appariées
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Cas des séries appariées 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Considérons le cas de séries appariées, c'est à dire
+  lorsque les deux échantillons $X$ et $Y$ représente les deux mesures
+  que subissent une entitée statistique donnée.
+
+- Dans cette configuration, les tests de Wilcoxon ou la variante de Mann-Whitney ne 
+  sont plus applicables.
+
+- Le test des signés permettent de résoudre ce problème :
+  - On utilise le test de Wilcoxon signé (problème à un échantillon) sur les différences $D = X - Y$  
+  - De manière analogue, on peut aussi utiliser le test du signe.

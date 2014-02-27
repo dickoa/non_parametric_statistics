@@ -1,4 +1,4 @@
-#+TITLE: Échelle sur deux échantillons
+#+TITLE: Test sur paramètre d'échelle sur deux échantillons
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -46,148 +46,81 @@
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-- Lorsque l'on dispose d'un échantillon qui décrit un phénomène donné, il est 
-  important de s'intérroger sur le caractère aléatoire des observations.
-- Lors de l'étude de série temporelle, une question cruciale est de savoir si les données
-  suivent une tendance précise.
-- On peut dès lors de procéder à un test /d'échantillon aléatoire/ afin de savoir
-  si les fluctuations de l'échantillon sont aléatoires ou déterminées ?
-- Deux tests d'hypothèse seront présentés afin de répondre à ces questions :
-  - le test de coéfficient du corrélation de rang de Spearman
-  - le test de coéfficient du corrélation de rang de Kendall
+
+- Soit $\sigma$ un paramètre d'échelle.
+- On supposera par la suite que $F_y(x) = F_x(\dfrac{x}{\sigma}) \forall x \in \mathbb{R}$
+- Il est possible de comparer la distribution en utilisant le paramètre
+  d'échelle $\sigma$.
+- Les hypothèses sont alors les suivantes
+- $H_0\ :\ \sigma = 1$ : égalité entre $X$ et $Y$
+- $H_1\ :\ \sigma \neq 1$ : $X$ différent de $Y$
+
+Les hypothèses alternatives suivantes peuvent aussi être considéré :
+- $H_1\ :\ \sigma > 1$ : $X$ stochastiquement supérieur à $Y$
+- $H_1\ :\ \sigma < 1$ : $X$ stochastiquement inférieur à $Y$
+
+** Introduction 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+- Soit $X$ et $Y$ deux v.a dont les échantillons peuvent être de taille différentes
+- Les procédures de test sur paramètre de distribution seront basées sur
+  une famille de statistiques linéaires de rang particulières de la forme :
+
+\[
+S_N = \sum_{i = 1}^m a_N(R_i)
+\]
+
+- $R_i$ est le rang de $X_i$ dans l'échantillon $Z = (X_1, ..., X_m, Y_1, ..., Y_n)$ et on a $N = n + m$  
+- les score $a_N(i)$ sont : 
+  - décroissant (ou croissant) pour $i \leq \dfrac{N + 1}{2}$ 
+  - croissant (ou décroissant) pour $i \geq \dfrac{N + 1}{2}$ 
+
+
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Dans cette partie, nous présenterons deux tests basées sur la statistique définit plus haut :
+  - Le test de Mood
+  - Le test de Ansari-Bradley
+
 
 * Test de Mood
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Test de Mood : résolution 			    :B_frame:
+
+** Test de Mood : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-    
-- Une alternative au test de corrélation de rang de Spearman est l'utilisation
-  du test corrélation de rang de Mood.
--  L'idée de base est comparer l'échantillon naturel $(X_1, ..., X_n)$ et celui
-   ordonné $(X_{(1)}, ..., X_{(n)})$ en remarquant que si la tendance est strictement monotone
-   alors ces deux échantillons coincident.
-- La construction de ce test est basée sur une mesure du nombre d'interversions par
-  rapport à l'ordre d'observation.
-- Il s'agit alors de construire une statistique basée sur : 
-
+La statistique de test corresponds à la statistique linéaire de rang avec
+les scores suivants : 
 \[
-Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)
+a_N(i) = (i - \frac{N + 1}{2})^2,\ \forall 1\leq i \leq N
 \]
 
-$Q$ permet alors de compter le nombre de fois où pour $i < j$ on a $X_i > X_j$.
+La statistique $M_N$ est alors définie par :
 
-** Test de Mood : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-- Le nombre maximal possible d'interversion pour un échantillon est égal au nombre 
-  de couple $(i, j)$ avec $i < j$ :    
 \[
-Q_{max} = C_n^2 = \frac{n(n-1)}{2}
+M_N = \sum_{i = 1}^m (R_i - \frac{N + 1}{2})^2
 \]
 
-- Le nombre minimal possible d'inversion pour un échantillon est nul  
-\[
-Q_{min} = 0
-\]
-
-- La loi de $Q$ peut être obtenu par la fonction génératrice des moments
-
-** Test de Mood : résolution 			    :B_frame:
+** Test de Mood : résolution 					    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
+Sous $H_0$, $M_N$ on a les régions critiques suivantes :
 
-On appelle coefficient de corrélation de rang Mann et Whitney, la
-statistique $\tau$ définie par :
-\[
-\tau = 1 - \frac{4Q}{n(n - 1)}
-\]
+- ${M_N\ \geq\ s_1}$ : ${\sigma\ >\ 1}$ 
+- ${M_N\ \leq\ s_2}$ : ${\sigma\ <\ 1}$
+- ${M_N\ \geq\ s_1\ ou\ W_N\ \leq\ s_2}$ : ${\sigma\ \neq\ 1}$
 
-- avec $Q$ défini plus haut
-- Pour un échantillon totalement inversé : $\tau = -1$
-- Pour un échantillon totalement ordonné : $\tau = 1$
-
-** Test de Mood : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-\[
-\mathbb{E}(Q) = \frac{n(n-1)}{4}
-\]
-
-\[
-\mathbb{V}(Q) = \frac{n(n-1)(2n + 5)}{72}
-\]
-
-Et donc
-
-\[
-\mathbb{E}(\tau) = 0
-\]
-
-\[
-\mathbb{V}(\tau) = \frac{2(2n + 5)}{9n(n - 1)}
-\]
-
-** Test de Mood : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-
-Sous $H_0$ et pour $n$ grand, la région de rejet est :
--  $\displaystyle {\tau > z_1 \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance positive
--  $\displaystyle {\tau < z_2 \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance négative
--  $\displaystyle {|\tau| > z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance quelconque
-
-$z$, $z_1$, $z_2$ sont les quantiles de loi normale centrée réduite et dépendent de du niveau du test
-et son caractère (unilatéral, bilatéral)
-
-** Test de Mood : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-Soit 
-
-\[
-Q^{'} = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_j - X_i)
-\]
-
-Pour $n \leq 10$, on peut montrer (exercice) que 
-
-\[
-\tau = \frac{S}{C_n^2}
-\]
-
-avec 
-
-\[
-S = Q - Q^{'}
-\]
-
-** Test de Mood : résolution 		            :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-Sous $H_0$, la loi de $S$ est tabulée donc ont peut définir les 
-région de rejet suivante pour $n \leq 10$ : 
-- ${S > s_1}$ : dépendance positive
-- ${S < s_2}$ : dépendance négative
-- ${|S| > s}$ : dépendance quelconque
-
-$s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau du test
-  et son caractère (unilatéral, bilatéral)
-
-** Test de Mood : exemple 			    :B_frame:
+** Test de Mood : exemple 					    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
@@ -230,132 +163,31 @@ $s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Test de Ansari-Bradley : résolution 			    :B_frame:
+** Test de Ansari-Bradley : résolution 		    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-    
-- Une alternative au test de corrélation de rang de Spearman est l'utilisation
-  du test corrélation de rang de Ansari-Bradley.
--  L'idée de base est comparer l'échantillon naturel $(X_1, ..., X_n)$ et celui
-   ordonné $(X_{(1)}, ..., X_{(n)})$ en remarquant que si la tendance est strictement monotone
-   alors ces deux échantillons coincident.
-- La construction de ce test est basée sur une mesure du nombre d'interversions par
-  rapport à l'ordre d'observation.
-- Il s'agit alors de construire une statistique basée sur : 
-
+La statistique de test corresponds à la statistique linéaire de rang avec
+les scores suivants : 
 \[
-Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)
+a_N(i) = \frac{N + 1}{2} - |i - \frac{N + 1}{2}|,\ \forall 1\leq i \leq N
 \]
 
-$Q$ permet alors de compter le nombre de fois où pour $i < j$ on a $X_i > X_j$.
+La statistique de test $AB_N$ est alors définie par :
 
-** Test de Ansari-Bradley : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-- Le nombre maximal possible d'interversion pour un échantillon est égal au nombre 
-  de couple $(i, j)$ avec $i < j$ :    
 \[
-Q_{max} = C_n^2 = \frac{n(n-1)}{2}
+AB_N = \sum_{i = 1}^m (\frac{N + 1}{2} - |R_i - \frac{N + 1}{2}|)
 \]
 
-- Le nombre minimal possible d'inversion pour un échantillon est nul  
-\[
-Q_{min} = 0
-\]
-
-- La loi de $Q$ peut être obtenu par la fonction génératrice des moments
-
-** Test de Ansari-Bradley : résolution 			    :B_frame:
+** Test de Ansari-Bradley : résolution 					    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
+Sous $H_0$, $AB_N$ on a les régions critiques suivantes :
 
-On appelle coefficient de corrélation de rang Mann et Whitney, la
-statistique $\tau$ définie par :
-\[
-\tau = 1 - \frac{4Q}{n(n - 1)}
-\]
-
-- avec $Q$ défini plus haut
-- Pour un échantillon totalement inversé : $\tau = -1$
-- Pour un échantillon totalement ordonné : $\tau = 1$
-
-** Test de Ansari-Bradley : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-\[
-\mathbb{E}(Q) = \frac{n(n-1)}{4}
-\]
-
-\[
-\mathbb{V}(Q) = \frac{n(n-1)(2n + 5)}{72}
-\]
-
-Et donc
-
-\[
-\mathbb{E}(\tau) = 0
-\]
-
-\[
-\mathbb{V}(\tau) = \frac{2(2n + 5)}{9n(n - 1)}
-\]
-
-** Test de Ansari-Bradley : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-
-Sous $H_0$ et pour $n$ grand, la région de rejet est :
--  $\displaystyle {\tau > z_1 \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance positive
--  $\displaystyle {\tau < z_2 \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance négative
--  $\displaystyle {|\tau| > z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance quelconque
-
-$z$, $z_1$, $z_2$ sont les quantiles de loi normale centrée réduite et dépendent de du niveau du test
-et son caractère (unilatéral, bilatéral)
-
-** Test de Ansari-Bradley : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-Soit 
-
-\[
-Q^{'} = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_j - X_i)
-\]
-
-Pour $n \leq 10$, on peut montrer (exercice) que 
-
-\[
-\tau = \frac{S}{C_n^2}
-\]
-
-avec 
-
-\[
-S = Q - Q^{'}
-\]
-
-** Test de Ansari-Bradley : résolution 		            :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-Sous $H_0$, la loi de $S$ est tabulée donc ont peut définir les 
-région de rejet suivante pour $n \leq 10$ : 
-- ${S > s_1}$ : dépendance positive
-- ${S < s_2}$ : dépendance négative
-- ${|S| > s}$ : dépendance quelconque
-
-$s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau du test
-  et son caractère (unilatéral, bilatéral)
+- ${AB_N\ \geq\ s_1}$ : ${\sigma\ >\ 1}$ 
+- ${AB_N\ \leq\ s_2}$ : ${\sigma\ <\ 1}$
+- ${AB_N\ \geq\ s_1\ ou\ W_N\ \leq\ s_2}$ : ${\sigma\ \neq\ 1}$
 
 ** Test de Ansari-Bradley : exemple 				    :B_frame:
    :PROPERTIES:

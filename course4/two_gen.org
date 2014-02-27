@@ -177,7 +177,6 @@ avec $t_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $T_{n-2}$
   ks.test(X, Y)
 #+end_src
 
-
 * Test de Cramer-von Mises
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]

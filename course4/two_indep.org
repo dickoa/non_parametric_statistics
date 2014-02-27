@@ -47,15 +47,44 @@
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-- Lorsque l'on dispose d'un échantillon qui décrit un phénomène donné, il est 
-  important de s'intérroger sur le caractère aléatoire des observations.
-- Lors de l'étude de série temporelle, une question cruciale est de savoir si les données
-  suivent une tendance précise.
-- On peut dès lors de procéder à un test /d'échantillon aléatoire/ afin de savoir
-  si les fluctuations de l'échantillon sont aléatoires ou déterminées ?
-- Deux tests d'hypothèse seront présentés afin de répondre à ces questions :
-  - le test de coéfficient du corrélation de rang de Spearman
-  - le test de coéfficient du corrélation de rang de Kendall
+
+- Les procédures non paramétrique permettent de tester la structure de la dépendence
+  au sein d'échantillon.
+- Il est cependant possible de procéder à la comparaison d'échantillons issuent de 
+  populations différentes.
+- Cette comparaison se base sur les propriétés des statistique de rangs et de rangs signés
+  et permettent de réaliser une comparaison à plusieurs niveau :
+  - Relation de dépendance
+  - Comparaison de paramètre de position
+  - Comparaison de paramètre d'échelle
+  - Comparaison de génerale de distribution
+ 
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Dans cette section, nous allons nous intéresser aux tests d'indépendances afin d'analyser
+  les relation de dépendance entre deux v.a.
+- Il existe de nombreuses procédures qui permettent de réaliser de tels comparaison.
+- Dans cette section, deux tests d'hypothèse seront présentés afin de répondre à ces questions :
+  - le test de Spearman
+  - le test de Kendall
+
+
+
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+L'hypothèse qui sera utilisé afin de comparer les v.a est : 
+- $H_0$ : $F(x,y) = F_x(x) F_y(y),\ \forall x, y \in \mathbb{R}$ 
+- $H_1$ : $\exists x, y \in \mathbb{R},\ F(x, y) \neq F_x(x) F_y(y)$ (dépendance quelconque)
+
+Il est possible d'avoir les alternatives suivantes :
+- dépendance positive
+- dépendance négative
 
 * Test de Spearman
 #+LATEX:\begin{frame}{Plan}
@@ -65,8 +94,23 @@
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Le but est de construire une procédure de test basée sur le coéfficient
-de corrélation de Pearson entre les couples de rangs ($R_i$, $i$)
+
+- Soit X et Y deux v.a et soit $(X_1, ..., X_n)$ et $(Y_1, ...., Y_n)$
+  deux réalisations de $X$ et $Y$ respectivement.
+- Le test de Spearman permet de tester l'indépendance entre $X$ et $Y$ et plus
+  généralement la relation de dépendance.  
+- Il est similaire en construction au test de corrélation de rang du Spearman pour
+  les problèmes à un échantillon.
+- Le test de Spearman peut être construit via plusieurs statistiques qui permettent
+  de répondre au même problème de test. 
+
+** Test de Spearman : résolution 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- La première statistique qui va permettre tester l'indépedance entre $X$ et $Y$
+  est basée sur les rangs de $(X_1, ..., X_n)$ et $(Y_1, ..., Y_n)$ que nous allons étudier est :
 
 \[
 S = \sum_{i=1}^n R_i Q_i
@@ -86,23 +130,24 @@ Q_i = \sum_{i=1}^n \mathrm{1}_{\mathbb{R}_+} (Y_i - Y_j)
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-Les hypothèses sont les suivantes :
-- $H_0$ : $X$ et $Y$ sont de même loi : $F = G$
-contre
-- $H_1$ : $F \neq G$
 
-- On peut utiliser les alternatives suivantes aussi :
-  - $F < G$
-  - $F > G$
+- Pour faciliter le calculs de la statistique ainsi que ces propriétés, nous allons la reformuler.
+- Considerons, de nouveau le couple de v.a $(X, Y)$ et soit $Z$ la v.a dont l'observation $Z_i$ est la réalisation 
+  de $Y$ associée à $X_{(i)}$.
+- Soit $T_i$ le rang de $Z_i$, on a alors :
+   
+\[
+S = \sum_{i=1}^n i T_i
+\]
 
-** Test de Spearman : résolution 		    :B_frame:
+** Test de Spearman : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
-La région de rejet $W$ est du type définie par :
+La région de rejet $W$ pour ce test d'indépendance est définie par :
 - ${S > s1}$ : dépendance positive
 - ${S < s2}$ : dépendance négative
-- ${S > s1 ou S < s2}$ : dépendance quelconque
+- ${S > s1\ ou\ S < s2}$ : dépendance quelconque
 
 De plus sous $H_0$, la distribution de $S$ est symétrique autour de 
 sa moyenne :
@@ -138,9 +183,9 @@ Q_i = n + 1 - R_i \Longrightarrow S_{min} = \sum_{i = 1} i (n + 1 - i)^2
    :BEAMER_OPT: t      
    :END: 
 
-- Comme pour le cas univarié, la statistique de test peut 
+- De manière analogique au cas univarié, la statistique de test peut 
   s'écrire en fonction du coéfficient de corrélation de Pearson entre
-  $(R_i, Q_i)$. Cette statistique, est une function de $S$ : 
+  $(R_i, Q_i)$. On peut montrer que cette statistique, est une fonction de $S$ : 
 
 \[
 r_s = \frac{1}{\sqrt{n - 1}} \frac{S - \mathbb{E}(S)}{\sigma(S)}
@@ -152,7 +197,7 @@ r_s = 1 - \frac{6}{n (n^2 - 1)} \sum_{i = 1}^n (R_i - Qi)^2
 
 - $r_s$ est centré autour de son espérance qui est nulle.
 - $r_s$ est de variance $\dfrac{1}{n - 1}$
-- Pour la suite on posera : $\displaystyle D_i^2 = (R_i - Qi)^2$
+- Pour la suite on posera : $\displaystyle D_i = (R_i - Qi)$
 
 ** Test de Spearman : résolution 				    :B_frame:
    :PROPERTIES:
@@ -171,11 +216,10 @@ r_s \sqrt{n - 1} \longrightarrow \mathcal{N}(0, 1)
 r_s \sqrt{\frac{n - 2}{1 - r^2}} \simeq T_{n - 2}
 \]
 
-- On peut aussi construire la région critique à partir de 
+- On peut aussi construire la région critique à partir de la statistique
 \[
 S^* = \sum_{i = 1}^n D_i^2
 \]
-
 
 ** Test de Spearman : résolution 				    :B_frame:
    :PROPERTIES:
@@ -230,6 +274,21 @@ Donc on remplace les $m$ ex-aequo par la quantité $k + \dfrac{m + 1}{2}$.
     :PROPERTIES:
     :BEAMER_env: block
     :END:
+La procédure de correction des ex-aequo est nécessaire car
+en présence de plusieurs ex-aequo, la statistique de test $r_s$
+est inflaté. Cette inflation de la statistique de test peut conduire
+à rendre la procédure de test trop optimiste. Néanmoins, dans la pratique, quand 
+on dispose de peu de ex-aequo l'effet sur la statistique de test est 
+minimal.  
+
+** Test de Spearman : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+*** Ex-aequo 							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
 En cas d'ex-aequo, alors la statistique $r_s$ est modifiée :
 \[
 r_s^* = \frac{1}{2 R^* Q^*}(R^{*2} + Q^{*2} - \sum_{i = 1}^n D_i^2)
@@ -238,14 +297,6 @@ r_s^* = \frac{1}{2 R^* Q^*}(R^{*2} + Q^{*2} - \sum_{i = 1}^n D_i^2)
 avec 
 - $\displaystyle R^{*2} = \frac{n(n^2 - 1)}{12} - \sum_{m \in T_X} \frac{m^3 - m}{12}$
 - $\displaystyle Q^{*2} = \frac{n(n^2 - 1)}{12} - \sum_{m \in T_Y} \frac{m^3 - m}{12}$
-
-** Test de Spearman : résolution 				    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-Il est possible de faire une analogie avec le test du coéfficient de corrélation de Spearman.
-Considerons, le couple de v.a $(X, Y)$ et soit $Z$ la v.a dont l'observation $Z_i$ est la réalisation de $Y$ associée à $X_{(i)}$. 
 
 
 
@@ -324,7 +375,7 @@ df <- mutate(df,
   S_star <- sum(df$Di_sq)
   r_star <- stat_test(R_star_sq, Q_star_sq, S_star)
   r_theo <- qt(p = 0.95, df = n - 2) * sqrt((1 - r_star) / (n - 2))
-  c(rs_star = rs_star, r_theo = r_theo, S_star)
+  c(r_star = r_star, r_theo = r_theo, S_star = S_star)
   
 #+end_src
 
@@ -335,7 +386,7 @@ df <- mutate(df,
    :END:
 
 #+begin_src R :exports both
-  rs_star > r_theo 
+  r_star > r_theo 
 #+end_src
 
 On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ au seuil de 5%.
@@ -347,10 +398,10 @@ On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ 
    :END:
 
 
+
 #+begin_src R :exports both
   cor.test(df$X, df$Y, method = "spearman", alternative = "greater")  
 #+end_src
-
 
 * Test de Kendall
 #+LATEX:\begin{frame}{Plan}
@@ -361,37 +412,85 @@ On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ 
    :BEAMER_env: frame
    :END:
     
-- Une alternative au test de corrélation de rang de Spearman est l'utilisation
-  du test corrélation de rang de Kendall.
--  L'idée de base est comparer l'échantillon naturel $(X_1, ..., X_n)$ et celui
-   ordonné $(X_{(1)}, ..., X_{(n)})$ en remarquant que si la tendance est strictement monotone
-   alors ces deux échantillons coincident.
+- Il existe plusieurs tests basés sur les rangs pour tester l'indépendance
+  de v.a.
+- Le test de Kendall est similaire au test de corrélation de rang de Kendall pour
+  traiter les problèmes à un échantillon. 
 - La construction de ce test est basée sur une mesure du nombre d'interversions par
-  rapport à l'ordre d'observation.
-- Il s'agit alors de construire une statistique basée sur : 
+  rapport à l'ordre d'observation entre des réalisations de $X$ et $Y$.
+- Afin de construire les statistiques sur lesquelles seront basées
+  le test de Kendall nous allons considerer, la v.a $T$ définie pour
+  construire le test de Spearman ($T_i$ est le rang de $Z_i$ avec $Z_i$
+  qui représente l'observation de $Y$ associé à $X_{(i)}$)
+  
+** Test de Kendall : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- La statistique de test est basée sur une v.a $V$ dont les caractéristiques sont les suivantes :
+  - A chaque couple $(T_i,T_j)$ avec $i < j$ prends $1$
+    si il y a pas concordance $(T_i < T_j)$
+  - A chaque couple $(T_i,T_j)$ avec $i < j$ prends $1$
+    si il y a inversion $(T_i > T_j)$
+- Pour tout les couples sur un échantillons de taille $n$, nous avons $C_n^2$ 
+  valeurs ($V\ \in \{-1, 1\}$). En notans $S$ la somme des réalisations de la v.a $V$ 
+  alors on peut le $\tau$ de Kendall par :
+\[
+\tau = \frac{S}{C_n^2}
+\]
+
+** Test de Kendall : résolution 		    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+La statistique $S$ peut être utilisé pour construire le test.
+Sous $H_0$, la loi de $S$ est tabulée donc ont peut définir les 
+région de rejet suivante pour $n \leq 10$ : 
+- ${S > s_1}$ : dépendance positive
+- ${S < s_2}$ : dépendance négative
+- ${S > s_1\ ou\ S < s_2}$ : dépendance quelconque
+
+** Test de Kendall : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t      
+   :END: 
+Soit $X$ une v.a et $(X_1, ..., X_n)$ un échantillon de $X$.
+Le nombre d'accords $Q$ est définie par :
 
 \[
 Q = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_i - X_j)
 \]
 
-$Q$ permet alors de compter le nombre de fois où pour $i < j$ on a $X_i > X_j$.
+Et le nombre de désaccords $Q^{'}$ est définie par :
 
-** Test de Kendall : résolution 			    :B_frame:
+
+\[
+Q^{'} = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_j - X_i)
+\]
+
+On a alors :
+
+\[
+S = Q - Q^{'}
+\]
+
+** Test de Kendall : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 
-On appelle coefficient de corrélation de rang Kendall, la
-statistique $\tau$ définie par :
+En remplaçant $S$ par sa valeur et en simplifiant on obtient :
+
 \[
 \tau = 1 - \frac{4Q}{n(n - 1)}
 \]
 
-- avec $Q$ défini plus haut
 - Pour un échantillon totalement inversé : $\tau = -1$
 - Pour un échantillon totalement ordonné : $\tau = 1$
 
-** Test de Kendall : résolution 			    :B_frame:
+** Test de Kendall : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t      
@@ -421,207 +520,15 @@ Et donc
    :END:
 
 Sous $H_0$ et pour $n$ grand, la région de rejet est :
--  $\displaystyle {\tau > z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance positive
--  $\displaystyle {\tau < z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance négative
--  $\displaystyle {|\tau| > z \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance quelconque
+-  $\displaystyle {\tau\ >\ z\ \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance positive
+-  $\displaystyle {\tau\ <\ z\ \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance négative
+-  $\displaystyle {|\tau|\ \neq\ z\ \sqrt(\frac{2(2n + 5)}{9n(n - 1)})}$ : dépendance quelconque
 
 $z$ sont les quantiles de loi normale centrée réduite et dépendent de du niveau du test.
 
-** Test de Kendall : résolution 	            :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t      
-   :END: 
-Soit 
 
-\[
-Q^{'} = \sum_{i=1}^{n-1}\sum_{j = i+1}^n1_{\mathbb{R_+^*}}(X_j - X_i)
-\]
-
-Pour $n \leq 10$, on peut montrer (exercice) que 
-
-\[
-\tau = \frac{S}{C_n^2}
-\]
-
-avec 
-
-\[
-S = Q - Q^{'}
-\]
-
-** Test de Kendall : résolution 		    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-Sous $H_0$, la loi de $S$ est tabulée donc ont peut définir les 
-région de rejet suivante pour $n \leq 10$ : 
-- ${S > s_1}$ : dépendance positive
-- ${S < s_2}$ : dépendance négative
-- ${|S| > s}$ : dépendance quelconque
-
-$s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau du test
-  et son caractère (unilatéral, bilatéral)
-
-** Test de Kendall : résolution 				    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-Sous $H_0$, la loi de $S$ est tabulée donc ont peut définir les 
-région de rejet suivante pour $n \leq 10$ : 
-- ${S > s_1}$ : dépendance positive
-- ${S < s_2}$ : dépendance négative
-- ${|S| > s}$ : dépendance quelconque
-
-$s$, $s_1$, $s_2$ son issue de la loi de $S$ tabulée et dépendent de du niveau du test
-  et son caractère (unilatéral, bilatéral)
-
-# ** Test de Kendall : exemple 			    :B_frame:
-#    :PROPERTIES:
-#    :BEAMER_env: frame
-#    :END:
-
-# #+begin_src R -i :exports both 
-#   Q <- function(x) {
-#       n <- length(x)
-#       res <- numeric()
-#       for (i in seq(n - 1)) {
-#           for (j in (i-1):n) {
-#               res <- c(res, sum((x[i] - x[j]) > 0))
-#           }
-#       }
-#       sum(res)
-#   }
-#   x <- c(5, 7, 4, 8, 10, 2)
-#   Q(x)
-  
-# #+end_src
-   
-# ** Test de Kendall : exemple 			    :B_frame:
-#    :PROPERTIES:
-#    :BEAMER_env: frame
-#    :END:
-
-# #+begin_src R :exports both
-#   n <- nrow(df1)
-#   p <- 0.05 
-#   tau <- 1 - 4 * Q(df1$ozone) / (n * (n - 1))
-#   Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
-#   c(tau = tau, Ttheo = Ttheo)
-  
-# #+end_src
-
-# ** Test de Kendall : exemple 			    :B_frame:
-#    :PROPERTIES:
-#    :BEAMER_env: frame
-#    :END:
-
-# #+begin_src R :exports both
-#   abs(tau) > Ttheo
-# #+end_src
-
-# On ne peut accepter l'hypothèse nulle au seuil de 5%
-    
-# ** Test de Kendall : exemple 			    :B_frame:
-#    :PROPERTIES:
-#    :BEAMER_env: frame
-#    :END:
-
-# #+begin_src R :exports both
-#   n <- nrow(df2)
-#   p <- 0.05
-#   tau <- 1 - 4 * Q(df2$x) / (n * (n - 1))
-#   Ttheo <- qnorm(p = 1 - p/2) * sqrt((2 * (2 * n + 5)) / (9 * n * (n - 1)))
-#   c(tau = tau, Ttheo = Ttheo)
-# #+end_src
-
-# ** Test de Kendall : exemple 			    :B_frame:
-#    :PROPERTIES:
-#    :BEAMER_env: frame
-#    :END:
-
-# #+begin_src R :exports both
-#   abs(tau) > Ttheo
-# #+end_src
-
-# On ne peut rejetter l'hypothèse nulle au seuil de 5%
-
-# *** 							       :B_alertblock:
-#     :PROPERTIES:
-#     :BEAMER_env: alertblock
-#     :END:
-# Comme le test de corrélation de Spearman, le test de corrélation de rang de Kendall
-#  ne permet de détecter que l'existence d'une tendance /monotone/.
-
-
-** Test de Kendall : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-
-#+begin_src R :exports both
-    f <- function(n) (n^3 - n) / 12
-    get_ties <- function(x) table(x)[table(x) > 1]
-    stat_test <- function(r_sq, q_sq, s) 
-      (r_sq + q_sq - s) / (2 * sqrt(r_sq * q_sq))
-#+end_src
-
-#+begin_src R :exports both
-  n <- nrow(df)
-  R_star_sq <- f(n) - sum(f(get_ties(df$X)))
-  Q_star_sq <- f(n) - sum(f(get_ties(df$Y)))
-  S_star <- sum(df$Di_sq)
-  r_star <- stat_test(R_star_sq, Q_star_sq, S_star)
-  r_theo <- qt(p = 0.95, df = n - 2) * sqrt((1 - r_star) / (n - 2))
-  c(rs_star = rs_star, r_theo = r_theo)  
-#+end_src
-
-** Test de Kendall : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-#+begin_src R :exports both
-  rs_star > r_theo 
-#+end_src
-
-On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ au seuil de 5%.
 
 ** Test de Kendall : exemple 					    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
-
-#+begin_src R -i :exports both 
-    Q <- function(x) {
-        n <- length(x)
-        res <- numeric()
-        for (i in seq(n - 1)) {
-            for (j in (i-1):n) {
-                res <- c(res, sum((x[i] - x[j]) > 0))
-            }
-        }
-        sum(res)
-    }
-  
-  
-  Q_prim <- function(x) {
-        n <- length(x)
-        res <- numeric()
-        for (i in seq(n - 1)) {
-            for (j in (i-1):n) {
-                res <- c(res, sum((x[j] - x[i]) > 0))
-            }
-        }
-        sum(res)
-    }
-#+end_src
-
-** Test de Kendall : exemple 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t
@@ -630,11 +537,5 @@ On ne peut rejetter l'hypothèse nulle de dépendance positive entre $X$ et $Y$ 
 
 #+begin_src R :exports both
   cor.test(df$X, df$Y, method = "kendall", alternative = "greater")
-  df2 <- data.frame(x = c(12, 9, 14, 17), y = c(10, 14, 9, 13))
-  ti <- rank(arrange(df2, x)[,"y"])
-  Q_prim(ti) - Q(ti)
-  Q_prim(ti)
-  Q(ti)
-  1 - (4 * Q(ti) / (4 * (4 - 1)))
 #+end_src
 

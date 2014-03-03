@@ -1,4 +1,4 @@
-#+TITLE: Tests sur paramètre de position pour deux échantillons
+#+TITLE: Problème à deux échantillons : Paramètre de position
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -251,7 +251,7 @@ U_N = \sum_{i = 1}^m\sum_{j = 1}^n\mathrm{1}_{\mathbb{R^+}}(X_i - Y_j)
 Donc $U_N$ compte le nombre de fois où un $X$ est plus grand qu'un $Y$.
 De plus il s'agit de la statistique du signe calculée sur les $mn$ différences $(X_i - Y_j)$.
 
-** Test de Wilcoxon : résolution 		    :B_frame:
+** Test de Mann-Whitney : résolution 					    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:

@@ -1,4 +1,4 @@
-#+TITLE: Alternative générale sur deux échantillons
+#+TITLE: Problème à deux échantillons : Alternative générale
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer

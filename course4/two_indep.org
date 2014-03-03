@@ -1,4 +1,4 @@
-#+TITLE: Tests d'indépendance sur deux échantillons
+#+TITLE: Problème à deux échantillons : Tests d'indépendance
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -49,15 +49,15 @@
    :END:
 
 - Les procédures non paramétriques permettent de tester la structure de la dépendence
-  au sein d'échantillon.
-- Il est cependant possible de procéder à la comparaison d'échantillons issuent de 
-  populations différentes.
+  au sein d'une variable aléatoire.
+- Cependant il est possible de developer d'étendre ces procédures afin 
+  de comparer la distribution et la structure de dépendance entre deux variables aléatoires.
 - Cette comparaison se base sur les propriétés des statistique de rangs et de rangs signés
-  et permettent de réaliser une comparaison à plusieurs niveau :
+  et s'opère à plusieurs niveaux :
   - Relation de dépendance
   - Comparaison de paramètre de position
   - Comparaison de paramètre d'échelle
-  - Comparaison de génerale de distribution
+  - Comparaison génerale de deux distributions
  
 ** Introduction							    :B_frame:
    :PROPERTIES:
@@ -66,7 +66,7 @@
 
 - Dans cette section, nous allons nous intéresser aux tests d'indépendances afin d'analyser
   la relation de dépendance entre deux v.a.
-- Il existe de nombreuses procédures qui permettent de réaliser de tels comparaisons.
+- Il existe de nombreux tests afin d'analyser cette relation de dépendance entre deux v.a.
 - Dans cette section, deux tests d'hypothèse seront présentés afin de répondre à ces questions :
   - le test de Spearman
   - le test de Kendall
@@ -251,6 +251,7 @@ avec $t_{\alpha}$ le fractile d'ordre $1 - \alpha$ de $T_{n-2}$
 ** Test de Spearman : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
+   :BEAMER_OPT: t
    :END:
 *** Ex-aequo 							    :B_block:
     :PROPERTIES:
@@ -266,6 +267,14 @@ k + \frac{m + 1}{2}
 Donc on remplace les $m$ ex-aequo par la quantité $k + \dfrac{m + 1}{2}$.
 
 
+*** 							       :B_alertblock:
+    :PROPERTIES:
+    :BEAMER_env: alertblock
+    :END:
+
+Si les $m$ ex-aequo sont classés en ordre d'apparition dans l'échantillon, alors ce calcul 
+revient à faire une moyenne des rangs.
+
 ** Test de Spearman : résolution 				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
@@ -280,6 +289,8 @@ est inflaté. Cette inflation de la statistique de test peut conduire
 à rendre la procédure de test trop optimiste. Néanmoins, dans la pratique, quand 
 on dispose de peu de ex-aequo l'effet sur la statistique de test est 
 minimal.  
+
+
 
 ** Test de Spearman : résolution 				    :B_frame:
    :PROPERTIES:
@@ -299,8 +310,7 @@ avec
 - $\displaystyle Q^{*2} = \frac{n(n^2 - 1)}{12} - \sum_{m \in T_Y} \frac{m^3 - m}{12}$
 
 
-
-** Test de Spearman : exemple 			     :B_frame:
+** Test de Spearman : exemple 					    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :BEAMER_OPT: t

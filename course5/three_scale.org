@@ -1,4 +1,4 @@
-#+TITLE: Problème à deux échantillons : Paramètre d'échelle
+#+TITLE: Test sur paramètre d'échelle sur deux échantillons
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -48,7 +48,7 @@
    :END:
 
 - Soit $\sigma$ un paramètre d'échelle.
-- On supposera par la suite que $F_y(x) = F_x(\dfrac{x}{\sigma})\ \forall x \in \mathbb{R}$
+- On supposera par la suite que $F_y(x) = F_x(\dfrac{x}{\sigma}) \forall x \in \mathbb{R}$
 - Il est possible de comparer la distribution en utilisant le paramètre
   d'échelle $\sigma$.
 - Les hypothèses sont alors les suivantes
@@ -66,7 +66,7 @@ Les hypothèses alternatives suivantes peuvent aussi être considéré :
    :END:
 
 - Soit $X$ et $Y$ deux v.a dont les échantillons peuvent être de taille différentes
-- Les procédures de tests sur paramètre d'échelles seront basées sur
+- Les procédures de test sur paramètre de distribution seront basées sur
   une famille de statistiques linéaires de rang particulières de la forme :
 
 \[
@@ -187,7 +187,7 @@ Sous $H_0$, $AB_N$ on a les régions critiques suivantes :
 
 - ${AB_N\ \geq\ s_1}$ : ${\sigma\ >\ 1}$ 
 - ${AB_N\ \leq\ s_2}$ : ${\sigma\ <\ 1}$
-- ${AB_N\ \geq\ s_1\ ou\ AB_N\ \leq\ s_2}$ : ${\sigma\ \neq\ 1}$
+- ${AB_N\ \geq\ s_1\ ou\ W_N\ \leq\ s_2}$ : ${\sigma\ \neq\ 1}$
 
 ** Test de Ansari-Bradley : exemple 				    :B_frame:
    :PROPERTIES:

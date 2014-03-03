@@ -1,0 +1,146 @@
+#+TITLE: Tests sur paramètre sur de position pour K échantillons
+#+AUTHOR: Ahmadou H. DICKO
+#+DATE: Février 2014
+#+startup: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xetex, bigger]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+#+LATEX_HEADER: \newminted{r}{fontsize=\small, bgcolor=newgray}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text,Ligatures=Common]{Minion Pro}
+#+LATEX_HEADER: \setsansfont[Mapping=tex-text,Ligatures=Common]{Myriad Pro}
+#+LATEX_HEADER: \setmathfont[Scale=MatchLowercase]{Minion Pro}
+#+LATEX_HEADER: \setmonofont[Scale=0.75]{Source Code Pro}
+#+LATEX_HEADER: \institute[ENSAE]{ENSAE}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: Boadilla
+#+BEAMER_COLOR_THEME: orchid
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+#+PROPERTY: results output graphics
+#+OPTIONS: toc:nil H:2
+
+#+LATEX:\selectlanguage{frenchb}
+#+LATEX:\begin{frame}[t]{Plan}
+#+LATEX:\tableofcontents
+#+LATEX:\end{frame}
+
+* Introduction
+#+begin_src R :exports none :results silent :session
+  library(Cairo)
+  library(plyr)
+  mainfont <- "Minion Pro"
+  CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
+             bold = paste(mainfont, "style=Bold", sep=":"),
+             italic = paste(mainfont, "style=Italic", sep=":"),
+             bolditalic = paste(mainfont, "style=Bold Italic,BoldItalic", sep=":"))
+  pdf <- CairoPDF
+  options(prompt = "> ")
+#+end_src
+  
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Soit $\theta \in \mathbb{R}$ un paramètre de position.
+- On supposera par la suite que $F_y(x) = F_x(x - \theta) \forall x \in \mathbb{R}$
+- Il est possible de comparer la distribution en utilisant le paramètre
+  de positition $\theta$ (typiquement la médiane).
+- Les hypothèses sont alors les suivantes
+- $H_0\ :\ \theta = 0$ : égalité entre $X$ et $Y$
+- $H_1\ :\ \theta \neq 0$ : $X$ différent de $Y$
+
+Les hypothèses alternatives suivantes peuvent aussi être considéré :
+- $H_1\ :\ \theta > 0$ : $X$ stochastiquement supérieur à $Y$
+- $H_1\ :\ \theta < 0$ : $X$ stochastiquement inférieur à $Y$
+
+** Introduction 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+- Soit $X$ et $Y$ deux v.a dont les échantillons peuvent être de taille différentes
+- Les procédures de test sur paramètre de distribution seront basées sur
+  une famille de statistiques linéaires de rang particulières de la forme :
+
+\[
+S_N = \sum_{i = 1}^m a_N(R_i)
+\]
+
+- $R_i$ est le rang de $X_i$ dans l'échantillon $Z = (X_1, ..., X_m, Y_1, ..., Y_n)$ et on a $N = n + m$  
+- les score $a_N$ sont croissants, non constant et construit à partir de fonction mesurable à valeurs dans $]0,\ 1[$
+
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Dans cette partie, nous présenterons deux tests de la même famille :
+  - Le test de Wilcoxon
+  - Le test de Mann-Whitney
+
+* Test de Kruskall-Wallis
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Test de Kruskall-Wallis : résolution 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+La statistique de test corresponds à la statistique linéaire de rang avec
+avec $a_N(i) = i, \forall 1\leq i \leq N$
+
+\[
+W_N = \sum_{i = 1}^m R_i
+\]
+
+Avec :
+- $\displaystyle \mathbb{E}(W_N) = m \frac{m + n + 1}{2}$
+- $\displaystyle \mathbb{V}(W_N) = m n \frac{m + n + 1}{12}$
+
+
+** Test de Kruskall-Wallis : exemple				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+#+begin_src R :exports both
+x <- rnorm(100)
+#+end_src
+
+* Comparaison multiples en cas de rejet de $H_0$
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Comparaison multiples en cas de rejet de $H_0$								    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Considérons le cas de séries appariées, c'est à dire
+  lorsque les deux échantillons $X$ et $Y$ représente les deux mesures
+  que subissent une entitée statistique donnée.
+
+- Dans cette configuration, les tests de Wilcoxon ou la variante de Mann-Whitney ne 
+  sont plus applicables.
+
+- Le test des signés permettent de résoudre ce problème :
+  - On utilise le test de Wilcoxon signé (problème à un échantillon) sur les différences $D = X - Y$  
+  - De manière analogue, on peut aussi utiliser le test du signe.
+
+** Comparaison multiples : exemple 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+#+begin_src R :exports both
+x <- rnorm(100)
+#+end_src
+

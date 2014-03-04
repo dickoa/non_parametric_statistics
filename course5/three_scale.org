@@ -1,4 +1,4 @@
-#+TITLE: Test sur paramètre d'échelle sur deux échantillons
+#+TITLE: Problèmes à k échantillons : paramètre d'échelle
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -88,113 +88,61 @@ S_N = \sum_{i = 1}^m a_N(R_i)
   - Le test de Mood
   - Le test de Ansari-Bradley
 
-
-* Test de Mood
+* Test de Fligner-Killeen
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-
-** Test de Mood : résolution 		    :B_frame:
+** Test de Fligner-Killeen : résolution 			    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 La statistique de test corresponds à la statistique linéaire de rang avec
-les scores suivants : 
-\[
-a_N(i) = (i - \frac{N + 1}{2})^2,\ \forall 1\leq i \leq N
-\]
-
-La statistique $M_N$ est alors définie par :
+avec $a_N(i) = i, \forall 1\leq i \leq N$
 
 \[
-M_N = \sum_{i = 1}^m (R_i - \frac{N + 1}{2})^2
+W_N = \sum_{i = 1}^m R_i
 \]
 
-** Test de Mood : résolution 					    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Sous $H_0$, $M_N$ on a les régions critiques suivantes :
+Avec :
+- $\displaystyle \mathbb{E}(W_N) = m \frac{m + n + 1}{2}$
+- $\displaystyle \mathbb{V}(W_N) = m n \frac{m + n + 1}{12}$
 
-- ${M_N\ \geq\ s_1}$ : ${\sigma\ >\ 1}$ 
-- ${M_N\ \leq\ s_2}$ : ${\sigma\ <\ 1}$
-- ${M_N\ \geq\ s_1\ ou\ W_N\ \leq\ s_2}$ : ${\sigma\ \neq\ 1}$
-
-** Test de Mood : exemple 					    :B_frame:
+** Test de Fligner-Killeen : exemple				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 
-*** 								   :B_column:
-    :PROPERTIES:
-    :BEAMER_col: 0.4   
-    :BEAMER_env: block
-    :END:
-#+begin_src R :exports results 
-  X <- c(111, 107, 100, 99, 102, 106, 109, 108, 104, 99,
-         101, 96, 97, 102, 107, 113, 116, 113, 110, 98)
-  Y <- c(107, 108, 106, 98, 105, 103, 110, 105, 104,
-         100, 96, 108, 103, 104, 114, 114, 113, 108, 106, 99)
-  df <- data.frame(X, Y)
-  head(df, 10)
+#+begin_src R :exports both
+x <- rnorm(100)
 #+end_src
 
-*** 								   :B_column:
-    :PROPERTIES:
-    :BEAMER_env: column
-    :BEAMER_col: 0.6
-    :END:
-#+begin_src R :exports results :results graphics :file ../figures/course4-spear-1.pdf :height 7 
-  boxplot(X, Y, xaxt = "n")
-  axis(1, at = c(1, 2), labels = c("X", "Y"))
-  
-#+end_src
-   
-** Test de Mood : exemple 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
 
-#+begin_src R
-     mood.test(X, Y)
-#+end_src
-
-* Test de Ansari-Bradley
+* Comparaison multiples en cas de rejet de $H_0$
 #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Test de Ansari-Bradley : résolution 		    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-La statistique de test corresponds à la statistique linéaire de rang avec
-les scores suivants : 
-\[
-a_N(i) = \frac{N + 1}{2} - |i - \frac{N + 1}{2}|,\ \forall 1\leq i \leq N
-\]
-
-La statistique de test $AB_N$ est alors définie par :
-
-\[
-AB_N = \sum_{i = 1}^m (\frac{N + 1}{2} - |R_i - \frac{N + 1}{2}|)
-\]
-
-** Test de Ansari-Bradley : résolution 					    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-Sous $H_0$, $AB_N$ on a les régions critiques suivantes :
-
-- ${AB_N\ \geq\ s_1}$ : ${\sigma\ >\ 1}$ 
-- ${AB_N\ \leq\ s_2}$ : ${\sigma\ <\ 1}$
-- ${AB_N\ \geq\ s_1\ ou\ W_N\ \leq\ s_2}$ : ${\sigma\ \neq\ 1}$
-
-** Test de Ansari-Bradley : exemple 				    :B_frame:
+** Comparaison multiples en cas de rejet de $H_0$								    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 
-#+begin_src R
-  ansari.test(X, Y)
+- Considérons le cas de séries appariées, c'est à dire
+  lorsque les deux échantillons $X$ et $Y$ représente les deux mesures
+  que subissent une entitée statistique donnée.
+
+- Dans cette configuration, les tests de Wilcoxon ou la variante de Mann-Whitney ne 
+  sont plus applicables.
+
+- Le test des signés permettent de résoudre ce problème :
+  - On utilise le test de Wilcoxon signé (problème à un échantillon) sur les différences $D = X - Y$  
+  - De manière analogue, on peut aussi utiliser le test du signe.
+
+** Comparaison multiples : exemple 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+#+begin_src R :exports both
+x <- rnorm(100)
 #+end_src
 

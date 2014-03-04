@@ -1,4 +1,4 @@
-#+TITLE: Tests sur paramètre sur de position pour K échantillons
+#+TITLE: Problèmes à k échantillons : paramètre de position
 #+AUTHOR: Ahmadou H. DICKO
 #+DATE: Février 2014
 #+startup: beamer
@@ -48,72 +48,182 @@
    :BEAMER_env: frame
    :END:
 
-- Soit $\theta \in \mathbb{R}$ un paramètre de position.
-- On supposera par la suite que $F_y(x) = F_x(x - \theta) \forall x \in \mathbb{R}$
-- Il est possible de comparer la distribution en utilisant le paramètre
-  de positition $\theta$ (typiquement la médiane).
-- Les hypothèses sont alors les suivantes
-- $H_0\ :\ \theta = 0$ : égalité entre $X$ et $Y$
-- $H_1\ :\ \theta \neq 0$ : $X$ différent de $Y$
+- Les tests basés sur les statistiques linéaires de rang (signé) permettent de comparer
+  deux v.a.
+- Ces tests peuvent être étendus afin de pouvoir comparer $k$ variables aléatoires ($K > 2$).
 
-Les hypothèses alternatives suivantes peuvent aussi être considéré :
-- $H_1\ :\ \theta > 0$ : $X$ stochastiquement supérieur à $Y$
-- $H_1\ :\ \theta < 0$ : $X$ stochastiquement inférieur à $Y$
+- Soit $F_i$ la fonction de répartion de la ieme v.a alors l'hypothèse nulle est de la forme  :
+  - $H_0 : F_1 = F_2 = ... = F_k = F$
+
+- Les alternatives sont similaires à celles étudié pour les problème à deux échantillons :
+ - $\displaystyle H_1 : \exists\ i, j\ \ F_i \neq F_j$ : alternative générale 
+ - $\displaystyle H_1 : F_i(x) = F(x - \theta_i)$ : alternative de position
+ - $\displaystyle H_1 : F_i(x) = F(\frac{x}{\sigma_i})$ : alternative d'échelle
+
 
 ** Introduction 						    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :BEAMER_OPT: t
-   :END:
+     :PROPERTIES:
+     :BEAMER_env: frame
+     :END:
 
-- Soit $X$ et $Y$ deux v.a dont les échantillons peuvent être de taille différentes
-- Les procédures de test sur paramètre de distribution seront basées sur
-  une famille de statistiques linéaires de rang particulières de la forme :
+- Dans cette section du cour, nous allons nous intéresser aux problème à $k$ échantillon
+  à alternative de position.
+- Il est dès lors possible de reformuler les hypothèses :
+  - $H_0 : \theta_1 = \theta_2 = ... = \theta_k$
+  - $H_1 : \displaystyle H_1 : \exists\ i, j\ \ \theta_i \neq \theta_j$
 
-\[
-S_N = \sum_{i = 1}^m a_N(R_i)
-\]
-
-- $R_i$ est le rang de $X_i$ dans l'échantillon $Z = (X_1, ..., X_m, Y_1, ..., Y_n)$ et on a $N = n + m$  
-- les score $a_N$ sont croissants, non constant et construit à partir de fonction mesurable à valeurs dans $]0,\ 1[$
-
-** Introduction							    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-
-- Dans cette partie, nous présenterons deux tests de la même famille :
-  - Le test de Wilcoxon
-  - Le test de Mann-Whitney
+- Il existe de nombreux tests pour répondre à ce problème
+- Le test que nous allons présenter est celui de Kruskall-Wallis encore
+  appelé Anova de rang de Kruskall-Wallis 
 
 * Test de Kruskall-Wallis
-#+LATEX:\begin{frame}{Plan}
+  #+LATEX:\begin{frame}{Plan}
 #+LATEX:\tableofcontents[currentsection]
 #+LATEX:\end{frame}
-** Test de Kruskall-Wallis : résolution 			    :B_frame:
-   :PROPERTIES:
-   :BEAMER_env: frame
-   :END:
-La statistique de test corresponds à la statistique linéaire de rang avec
-avec $a_N(i) = i, \forall 1\leq i \leq N$
+
+** Test de Kruskall-Wallis : résolution							    :B_frame:
+     :PROPERTIES:
+     :BEAMER_env: frame
+     :BEAMER_OPT: t
+     :END:
+
+- Considérons $k$ échantillons  $X_1$, $X_2$, ..., $X_k$ et on note $X_{ij}$ la jeme observation
+  de l'échantillon $X_i$. 
+- On suppose que chaque échantillon est de taille $n_i$ ($i \leq k$) et $N = \sum_{i}^k n_i$. 
+- La statistique de test sera basée sur une généralisation de la statistique
+  linéaire de rang utilisé pour traiter les problème de position à deux échantillons.
+- Il s'agit d'une statistique de la forme :
 
 \[
-W_N = \sum_{i = 1}^m R_i
+S_i = \sum_{j = 1}^{n_i} a_N(R_{ij}),\quad 1 \leq i \leq k
 \]
 
-Avec :
-- $\displaystyle \mathbb{E}(W_N) = m \frac{m + n + 1}{2}$
-- $\displaystyle \mathbb{V}(W_N) = m n \frac{m + n + 1}{12}$
+- $R_{ij}$ est le rang de $X_{ij}$ dans l'échantillon global $(X_{11}, X_{12}, ..., X_{kn_k})$
 
 
-** Test de Kruskall-Wallis : exemple				    :B_frame:
+** Test de Kruskall-Wallis : résolution								    :B_frame:
+     :PROPERTIES:
+     :BEAMER_env: frame
+     :BEAMER_OPT: t
+     :END:
+
+- La statistique de test est obtenu en considérant le cas où $a_N(i) = i$ :
+
+\[
+S_i = \sum_{j = 1}^{n_i} R_{ij}
+\]
+
+- Soit $\bar{S}_i = \frac{S_i}{n_i}$  
+- $\mathbb{E}(R_{ij}) = \frac{N + 1}{2}$
+
+- L'idée de base est de comparer les $i$ moyenne de rang  $\bar{S_i}$ à la moyenne de rang global.
+- Sous l'hypothèse nulle, les moyennes de rang seront "proche" du rang moyen global. 
+- La construction du test se base alors sur une distance entre les $k$ $\bar{S_i}$ et leur centre de gravité$
+
+
+** Test de Kruskall-Wallis : résolution								    :B_frame:
+     :PROPERTIES:
+     :BEAMER_env: frame
+     :BEAMER_OPT: t
+     :END:
+
+Posons :
+
+  \[
+  \bar{S}^{'} = (\bar{S}_1, \bar{S}_2, ..., \bar{S}_{k - 1})
+  \]
+
+avec $\Sigma_S$ la matrice de variance-covariance de $\bar{S}$
+
+Alors en utilisant une approche similaire d'une analyse de la variance alors on peut
+construire le test en normalisant $S$
+
+  \[
+  KW = (\bar{S} - \mathbb{E}(\bar{S}))^{'} \Sigma_S^{-1} (\bar{S} - \mathbb{E}(\bar{S}))
+  \]
+
+
+Après simplification (calcul des moments de $\bar{S}$) :
+
+  \[
+  KW = \frac{12}{N (N + 1)} \sum_{i = 1}^k n_i (\bar{S}_i - \frac{N + 1}{2})^2
+  \]
+
+
+** Test de Kruskall-Wallis : résolution								    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 
-#+begin_src R :exports both
-x <- rnorm(100)
-#+end_src
+Il est possible de développer cette l'expression afin d'avoir une forme plus élaborée
+
+  \[
+  KW = \frac{12}{N (N + 1)} \sum_{i = 1}^k  \frac{S_i^2}{ni} - 3(N + 1)
+  \]
+
+ou encore
+
+  \[
+  KW = N - 1 - \frac{12}{N (N + 1)} \sum_{i = 1}^k  \sum_{j = 1}^{n_i} (R_{ij} - \bar{S}_i)^2
+  \]
+
+- $KW$ est minimum quand $\bar{S}_i = \mathbb{E}(\bar{S}_i) = \frac{N + 1}{2}$
+- $KW$ est maximum quand $\sum_{i = 1}^k  \sum_{j = 1}^{n_i} (R_{ij} - \bar{S_i})^2$ est minimum.
+  Donc quand la variabilité globale est expliqué par la dispersion entre les $\bar{S}_i$ et non 
+  par la variabilité interne au sein de chacun des $k$ échantillon.
+
+** Test de Kruskall-Wallis : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+
+Le vecteur $S^{'}$ est asymptotiquement gaussien.  
+
+et on a 
+
+  \[
+  KW = (\bar{S} - \mathbb{E}(\bar{S}))^{'} \Sigma_S^{-1} (\bar{S} - \mathbb{E}(\bar{S}))
+  \]
+
+Donc sous $H_0$, 
+
+\[
+KW \sim \chi_{k -1}^2
+\]
+
+Donc la région critique est de la forme : 
+\[
+W = {\chi_{k -1}^2 \geq c}
+\]
+
+** Test de Kruskall-Wallis : résolution 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+*** ex-aequo							    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+En présence d'ex-aequo, on remplace les rangs que ces ex-aequo aurait eu si
+ils avaient été différents par la moyenne de ces rangs.
+La statistique $KW$ doit aussi être corrigé, la nouvelle statistique est :
+
+  \[
+  KW^{*} = \frac{12}{N (N + 1)(1 - T)} \sum_{i = 1}^k n_i (\bar{S}_i - \frac{N + 1}{2})^2
+  \]
+
+avec :
+
+\[
+T = \frac{1}{N(N^2 - 1)} \sum_{i = 1}^k \sum_{t_i} (t_i^3 - t_i)
+\]
+
+avec $t_i$ le nombre d'ex-aequo dans $X_i$.
+
+
+
 
 * Comparaison multiples en cas de rejet de $H_0$
 #+LATEX:\begin{frame}{Plan}
@@ -123,24 +233,182 @@ x <- rnorm(100)
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
+- Lorsque l'hypothèse nulle est rejettée alors il existe au moins un paramètre
+  de position qui diffère d'un autre.
 
-- Considérons le cas de séries appariées, c'est à dire
-  lorsque les deux échantillons $X$ et $Y$ représente les deux mesures
-  que subissent une entitée statistique donnée.
+- Il peut être intéressant alors de savoir quel(s) groupe(s) diffère significativement
+  des autres.
 
-- Dans cette configuration, les tests de Wilcoxon ou la variante de Mann-Whitney ne 
-  sont plus applicables.
+- Ce problème peut être analysé sous deux angles :
+  - Determiner tous les groupes différents
+  - Comparer chaque à un groupe de référence choisi au préalable
 
-- Le test des signés permettent de résoudre ce problème :
-  - On utilise le test de Wilcoxon signé (problème à un échantillon) sur les différences $D = X - Y$  
-  - De manière analogue, on peut aussi utiliser le test du signe.
+- D'un point de vue théorique, ces comparaisons nous ramène au problème 
+  de /comparaison multiple/.
 
-** Comparaison multiples : exemple 					    :B_frame:
+
+** Comparaison multiples en cas de rejet de $H_0$								    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+
+*** Comparaison multiples en statistique			    :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+- La comparaison multiple se fait en réalisant plusieurs tests simultanéments.
+- La répétition des tests augmente les chances d'avoir un résultat significatif même si le traitement étudié n'est pas signifactif.
+- Donc la comparaison multiple donne lieu à une inflation artificielle du risque $\alpha$ qui croît avec le nombre de répetition. 
+- Il existe de nombreuses techniques pour corrigé la p-value et pouvoir avoir un risque global de $\alpha$.
+- La technique de Bonferroni est l'une des plus simples, elle consiste pour $J$ comparaisons (tests) de remplacer
+  le seuil $\alpha$ par $\displaystyle \frac{\alpha}{J}$
+
+
+** Comparaison multiples en cas de rejet de $H_0$								    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+Pour réaliser des Comparaisons multiples on procèdes au $\displaystyle \frac{k(k-1)}{2}$ tests suivant :
+- $H_0 : \theta_i = \theta_j$
+- $H_1 : \theta_i \neq \theta_j$
+
+- La procédure de Kruskall-Wallis corresponds aux test de Wilcoxon pour le cas $k = 2$
+- En posant $U$ la statistique du test de Wilcoxon associé alors
+  la méthode de Bonferroni pour conserver le risque $\alpha$.
+   - région de rejet : $\displaystyle \{U > z_{1-a}\}$   
+   - $\displaystyle z_{1-a}$ le quantile d'ordre $1-a$ de $\mathcal{N}(0, 1)$ 
+   - $\displaystyle a = \frac{2 \alpha}{k (k - 1)}$
+
+* Cas des séries appariées
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Cas des séries appariées 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- En cas de séries appariées ou de mesures repétées, on peut construire des tests 
+  construits à partir des statistiques linéaires de rangs signés.
+
+- Le test le plus populaire est l'Anova non paramétrique de Friedman 
+
+- Il est proche du test de Kruskall-Wallis est permet de tester l'effet d'un traitement
+  sur une entitée statistique.
+
+** Cas des séries appariées 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+Soit  le tableau de rang suivant :
+
+#+begin_latex
+\begin{table}
+\begin{tabular}{rrrrrr}
+ & \multicolumn{5}{c}{traitement} \\
+\cmidrule[1pt]{2-6}
+block & $X_1$ & ... & $X_j$ & ... & $X_k$\\
+\midrule[1pt]
+1 & $R_{11}$ & ... & $R_{1j}$ & ... & $R_{1k}$\\ 
+2 & $R_{21}$ & ... & $R_{2j}$ & ... & $R_{2k}$\\
+... & ... & ... & ... & ... & ... \\
+i & $R_{i1}$ & ... & $R_{ij}$ & ... & $R_{ik}$\\
+... & ... & ... & ... & ... & ... \\
+n & $R_{n1}$ & ... & $R_{nj}$ & ... & $R_{nk}$\\
+\bottomrule[1.5pt]
+\end{tabular}
+\end{table}
+#+end_latex
+
+
+** Cas des séries appariées 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+\[
+Fr = \frac{12 n}{k (k + 1)} \sum_{j = 1}^k (\bar{R}_{.k} - \bar{R_{..}})^2
+\]
+
+avec :
+
+- $\displaystyle \bar{R}_{.k} = \frac{1}{n} \sum_{i = 1}^n R_{ik}$
+- $\displaystyle \bar{R}_{..} = \frac{1}{n k} \sum_{i = 1}^n \sum_{j = 1}^k R_{ik}$
+
+
+** Cas des séries appariées 					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Sous $H_0$, pour de petites valeurs de $n$ et $k$ la loi de $Fr$ à été tabulée.
+- Pour de grande valeurs ($n > 15$ ou $k > 4$) alors la distribution asymptotiquement de $Fr$ 
+  sous $H_0$ est celle d'un $\chi_{k-1}^2$.
+- Les procédures de corrections en cas d'ex-aequo est similaire à celle du test de Kruskall-Wallis
+- Lorsque l'on rejette l'hypothèse nulle, on peut alors réaliser des comparaisons multiples afin de
+  déterminer le ou les traitements responsable du rejet de $H_0$. On utilisera les méthodes de corrections
+  de p-value afin de résoudre ce problème de comparaison multiple.
+ 
+
+** Test de Kruskall-Wallis : exemple				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+#+begin_src R :exports results :results silent
+  mais <- read.table("../data/mais.txt", header = TRUE)
+  names(mais) <- tolower(names(mais))
+  mais <- mais[, c("masse.grains", "parcelle")]
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.55
+    :END:
+#+begin_src R :exports results :results output graphics :file ../figures/mais_hist.pdf
+  library(ggplot2)
+  ggplot(mais, aes(masse.grains)) +
+      facet_wrap(~ parcelle, nrow = 2, scales = "free") +    
+      geom_histogram(aes(y = ..density..),
+                     fill = "white",
+                     colour = "black",
+                     binwidth = 10, size = 0.2)
+#+end_src
+
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.45
+    :END:
+#+begin_src R :exports results :results output graphics :file ../figures/mais_boxplot.pdf
+    ggplot(mais, aes(parcelle, masse.grains)) +
+      geom_boxplot(size = 0.2, outlier.shape = 19, outlier.size = 0.8)
+  
+#+end_src
+
+
+** Test de Kruskall-Wallis : exemple				    :B_frame:
    :PROPERTIES:
    :BEAMER_env: frame
    :END:
 
 #+begin_src R :exports both
-x <- rnorm(100)
+kruskal.test(masse.grains ~ parcelle, data = mais)
 #+end_src
 
+
+** Test de Kruskall-Wallis : exemple				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+#+begin_src R :exports both
+  suppressWarnings(pairwise.wilcox.test(mais$masse.grains, mais$parcelle, p.adjust.method = "bonf"))
+#+end_src

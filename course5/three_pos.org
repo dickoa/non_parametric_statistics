@@ -60,7 +60,7 @@
  - $\displaystyle H_1 : F_i(x) = F(x - \theta_i)$ : alternative de position
  - $\displaystyle H_1 : F_i(x) = F(\frac{x}{\sigma_i})$ : alternative d'échelle
 
-
+   
 ** Introduction 						    :B_frame:
      :PROPERTIES:
      :BEAMER_env: frame
@@ -70,7 +70,7 @@
   à alternative de position.
 - Il est dès lors possible de reformuler les hypothèses :
   - $H_0 : \theta_1 = \theta_2 = ... = \theta_k$
-  - $H_1 : \displaystyle H_1 : \exists\ i, j\ \ \theta_i \neq \theta_j$
+  - $H_1 : \displaystyle  \exists\ i, j\ \ \theta_i \neq \theta_j$
 
 - Il existe de nombreux tests pour répondre à ce problème
 - Le test que nous allons présenter est celui de Kruskall-Wallis encore
@@ -118,7 +118,7 @@ S_i = \sum_{j = 1}^{n_i} R_{ij}
 
 - L'idée de base est de comparer les $i$ moyenne de rang  $\bar{S_i}$ à la moyenne de rang global.
 - Sous l'hypothèse nulle, les moyennes de rang seront "proche" du rang moyen global. 
-- La construction du test se base alors sur une distance entre les $k$ $\bar{S_i}$ et leur centre de gravité$
+- La construction du test se base alors sur une distance entre les $k$ $\bar{S_i}$ et leur centre de gravité
 
 
 ** Test de Kruskall-Wallis : résolution								    :B_frame:
@@ -186,7 +186,7 @@ et on a
   KW = (\bar{S} - \mathbb{E}(\bar{S}))^{'} \Sigma_S^{-1} (\bar{S} - \mathbb{E}(\bar{S}))
   \]
 
-Donc sous $H_0$, 
+Donc sous $H_0$ et pour $min(n_i)$ grand on a :  
 
 \[
 KW \sim \chi_{k -1}^2

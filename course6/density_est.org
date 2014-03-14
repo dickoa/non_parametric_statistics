@@ -1,0 +1,624 @@
+#+TITLE: Estimation non paramétrique d'une densité
+#+AUTHOR: Ahmadou H. DICKO
+#+DATE: Février 2014
+#+startup: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xetex, bigger]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+#+LATEX_HEADER: \newminted{r}{fontsize=\small, bgcolor=newgray}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+#+LATEX_HEADER: \defaultfontfeatures{Scale=MatchLowercase}
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text,Ligatures=Common]{Linux Libertine O}
+#+LATEX_HEADER: \setsansfont[Mapping=tex-text,Ligatures=Common]{Linux Biolinum O}
+#+LATEX_HEADER: \setmonofont[Scale=0.75]{Source Code Pro}
+#+LATEX_HEADER: \institute[ENSAE]{ENSAE}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: Boadilla
+#+BEAMER_COLOR_THEME: orchid
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+#+PROPERTY: results output graphics
+#+OPTIONS: toc:nil H:2
+
+#+LATEX:\selectlanguage{frenchb}
+#+LATEX:\begin{frame}[t]{Plan}
+#+LATEX:\tableofcontents
+#+LATEX:\end{frame}
+
+* Introduction
+#+begin_src R :exports none :results silent :session
+      library(Cairo)
+      library(plyr)
+      library(MASS)
+      mainfont <- "Minion Pro"
+      CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
+                 bold = paste(mainfont, "style=Bold", sep=":"),
+                 italic = paste(mainfont, "style=Italic", sep=":"),
+                 bolditalic = paste(mainfont, "style=Bold Italic,BoldItalic", sep=":"))
+      pdf <- CairoPDF
+      options(prompt = "> ")
+  gdp <- read.csv("../data/sen_gdp.csv", row.names = 1)[,1]
+  gdp <- gdp / mean(gdp)  
+#+end_src
+  
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+- La fonction de densité est un concept fondemental en statistique
+- Elle caractérise la distribution d'une variable aléatoire et permettent 
+  d'analyser avec précision des phénomènes donnés
+- Cependant lorsque l'on dispose d'un échantillon de données, comment peut on estimer
+  la fonction de densité d'une variable aléatoire
+- Si l'on connait le processus génerateur de données théoriques, on peut alors procéder à une
+  estimation paramétrique du paramètre de position. 
+- Dans la pratique, cette situation est rarement observée.
+- Une solution est d'estimer cette fonction de densité à partir de l'échantillon en 
+  utilisant une approche non paramétrique.
+
+
+* Estimateur naïf
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+
+** Histogramme							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+C'est l'estimateur de densité le plus basique.
+
+\[
+\hat{f}(y) = \frac{1}{nh} \sum_{i = 1}^n I(z_k < y_i < z_{k+1}) 
+\]
+
+- $k$ tel que $z_k < y < z_{k+1}$
+- $(z_k, z_{k+1}), \forall k = 1, ..., m$ et $m < n$
+- $\displaystyle z_{k+1} - z_k = h,\ \forall k$
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/hist1.pdf
+  truehist(gdp, col = "steelblue")
+#+end_src
+
+
+** Estimateur naïf						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- L'idée est la même que celle de l'histogramme qui est d'avoir une estimation de la proportion de point
+  autour de chaque point.  
+
+- Cependant l'estimateur naïf permet de corriger le problème principal de l'histogramme qui
+  est le choix de l'origine de la partition.  
+
+- Cette correction s'effectue en utilisant une approche par fenêtre glissante qui permet de compter
+  tous les points à une distance proche du point d'évaluation et à la différence de l'histogramme
+  cette approche par fenêtre glissante permet d'éviter d'avoir des intervalles disjoints.
+
+** Estimateur naïf						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+\[
+\hat{f}(y) = \frac{1}{nh} \sum_{i = 1}^n I({y - \frac{h}{2} < y_i < y + \frac{h}{2}})
+\]
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.6
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/rect.pdf
+  plot(density(gdp, kernel = "rectangular"), xlab = "", main = "")  
+#+end_src
+
+
+
+** Estimateur naïf						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+Il est possible de reformuler L'estimateur naïf :
+
+\[
+\hat{f}(y) = \frac{1}{nh} \sum_{i = 1}^n w(\frac{y - y_i}{h})
+\]
+
+Avec 
+
+\[
+w(x) = I(|x| < \frac{1}{2})
+\]
+
+
+* Estimateur à noyau
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+** Estimateur à noyau 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- L'estimateur naïf utilise une fonction de poids $w(.)$ qui affecte un poids $1$ lorsque
+  une observation ($y_i$) appartenant à l'intervalle centré en $y$ et $0$ sinon.
+- Cette approche à l'inconveniant de présenter des discontinuités.
+- L'estimateur à noyau permet de résoudre ce problème en généralisant l'approche naïve
+- L'idée est de construire une nouvelle fonction de poids $\mathcal{K}$ qui associe à chaque observation une valeur d'autant
+  plus proche de 1 lorsque cette observation est proche de $y$ et 0 et sinon.
+
+** Estimateur à noyau 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Cette fonction $\mathcal{K}$ est appelé noyau et l'estimateur est de la forme :
+
+\[
+\hat{f}(y) = \frac{1}{nh} \sum_{i = 1}^n \mathcal{K}(\frac{y - y_i}{h})
+\]
+
+Avec
+
+- $\mathcal{K}$ symétrique autour de 0
+- $\int_{\mathbb{R}} \mathcal{K} = 1$
+
+** Estimateur à noyau 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- De part sa définition, on utilise souvent des fonctions de densité symétrique comme noyau $\mathcal{K}$.
+- Le choix d'une densité symétrique permet de donner des poids identitques aux observations équidistantes de $y$.
+- En théorie, le choix est très large, mais dans la pratique on considère souvent les deux noyaux suivants :
+  - Le noyau Gaussien
+  - Le noyau d'Epanechnikov
+
+
+** Estimateur à noyau : Noyau Gaussien 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+\[
+\mathcal{K}(x) = \frac{1}{\sqrt{2 \pi}} e^{\frac{-x^2}{2}}
+\]
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/gausskern.pdf
+  curve(dnorm(x), from = -3, to = 3, ylab = "Density", xlab = "", main = "Noyau gaussien")
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/gauss.pdf
+  plot(density(gdp, kernel = "gaussian"), xlab = "", main = "Estimateur")  
+#+end_src
+
+
+
+
+** Estimateur à noyau : noyau d'Epanechnikov 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+\[
+\mathcal{K}(x) = \frac{3(1 - \frac{x^2}{5})}{4 \sqrt{5}} I(|x| < \sqrt(5)) 
+\]
+
+- Densité symétrique construit sur un polynôme de second degrée (jouit de propriétés d'optimalité supérieur au noyau gaussien)
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/epanechdens.pdf
+  epan <- function(x)
+      ifelse(abs(x) < sqrt(5), 3 * (1 - x^2 / 5) / (4 * sqrt(5)), 0) 
+  curve(epan(x), from = -3, to = 3, main = "Noyau d\'Epanechnikov", ylab = "Density")
+#+end_src
+
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/epanech.pdf
+  plot(density(gdp, kernel = "epanechnikov"), xlab = "", main = "Estimateur")  
+#+end_src
+
+
+
+** Estimateur à noyau : comparaison des noyaux 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+- Dans la pratique, le choix du noyau à une influence faible sur l'estimateur final.
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/compargauss.pdf
+  plot(density(gdp, kernel = "gaussian"), xlab = "", main = "Noyau Gaussien")
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/comparepanech.pdf
+  plot(density(gdp, kernel = "epanechnikov"), xlab = "", main = "Noyau D\'Epanechnikov")
+#+end_src
+
+** Estimateur à noyau : comparaison des noyaux 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+- Par contre le paramètre de lissage (largeur de la fenêtre) à un impact sur L'estimateur
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/comparbw01.pdf
+  plot(density(gdp, kernel = "gaussian", bw = 0.1), xlab = "", main = "h = 0.1")
+#+end_src
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/comparbw04.pdf
+  plot(density(gdp, kernel = "gaussian", bw = 0.4), xlab = "", main = "h = 0.4")
+#+end_src
+    
+* Choix du paramètre de lissage
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+
+** Choix du paramètre de lissage 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+- La fonction noyau étant normalisé, le paramètre de lissage $h$ joue un rôle similaire
+  à la variance de l'estimateur. 
+- Donc les résultats sont assez sensibles au choix du paramètre de lissage $h$.
+- Dans la pratique, le but est de choisir le paramètre $h$ qui minimise la distance
+  entre $\hat{f}$ et $f$.
+- Le choix d'une distance basé sur la norme $L_2$ est souvent utilisée et particulièrement des 
+  indicateurs dérivés de l'erreur moyenne quadratique.
+   
+** Choix du paramètre de lissage				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+Pour évaluer l'erreur quadratique en un point spécifique $y$ :
+\[
+MSE(h) = E([\hat{f}(y) - f(y)]^2)
+\]
+
+Le compromis biais-variance
+
+\[
+MSE(h) = E([\hat{f}(y) - f(y)])^2 + \mathbb{V}(\hat{f}(y))
+\]
+
+
+** Choix du paramètre de lissage				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+Cependant il est nécessaire de mesurer la distance entre $\hat{f}$ et $f$ sur l'ensemble des
+valeurs $y$
+
+\[
+MISE(h) = E(\int [\hat{f}(y) - f(y)]^2 dy)
+\]
+
+L'arbitrage biais-variance
+
+\[
+MISE(h) = \int E([\hat{f}(y) - f(y)])^2 dy + \int \mathbb{V}(\hat{f}(y)) dy
+\]
+
+** Choix du paramètre de lissage				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- En utilisant un critère qui approxime le MISE, Silverman donne la valeur de $h$ 
+  optimale
+
+\[
+h_{opt} = (\frac{\int \mathcal{K}^2}{n \sigma_{\mathcal{K}}^2 \int (f^{''})^{\ 2}})^{\frac{1}{5}}
+\]
+
+Avec 
+- $\sigma_{\mathcal{K}}^2 = \int x^2 \mathcal{K}(x) dx$
+
+
+
+** Choix du paramètre de lissage				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+- Il est possible de calculer ces indicateurs mais ce calcul nécessite de connaitre
+  la vraie densité ou une approximation de cette densité en utilisant les différentielles
+- Dans la pratique pour pallier à ce problème on dispose de plusieurs approche :
+  - les règles empiriques
+  - la validation croisée
+
+    
+** règles empiriques 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Une approche simple est de considérer une loi normale de variance $\sigma^2$
+  comme  densité de référence
+- En utilisant la distribution gaussienne alors le paramètre de lissage optimale est :
+
+\[
+h_{opt} = 1.059 \sigma n^{-\frac{1}{5}}
+\]
+
+- Dans la pratique, pour obtenir $h_{opt}$ il faut remplacer $\sigma$ par son estimateur $\hat{\sigma}$
+ 
+
+** règles empiriques 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Lorsque la densité est caractérisée par des queues épaisses, il est possible 
+  de remplacer $\sigma$ par un autre paramètre d'échelle plus robuste.
+- Le ration de l'intervalle interquartile sur l'intervalle interquartile de la loi normale
+  centré réduite
+
+\[
+h_{opt} = 1.059\ \frac{IQR}{1.349} n^{-\frac{1}{5}}
+\]
+
+
+** règles empiriques 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Pour des distributions éloignés de la loi normale, l'estimateur suivant est utilisé :
+
+\[
+\hat{h}_{opt} = 0.9\ min(\hat{\sigma}, \frac{\hat{IQR}}{1.349}) n^{-\frac{1}{5}}
+\]
+
+
+** Validation croisée 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+\[
+ISE(h) = \int [\hat{f} - f]^2 dy = \int \hat{f}^{\ 2} dy - 2 \int \hat{f} f dy + \int f^{\ 2} dy
+\]
+
+- $\int f^{\ 2} dy$ ne dépend pas de $h$
+- De plus on a  : 
+
+\[
+\mathbb{E}(\hat{f}) = \int \hat{f}\ f dy \simeq \frac{1}{n} \sum_{i = 1} \hat{f}_{-i}
+\]
+
+(Estimateur "Leave one out")
+
+** Validation croisée 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Donc il suffit finalement de minimiser le critère : 
+
+\[
+CV(h) = \int \hat{f} dy - \frac{2}{n} \sum_{i = 1}^n \hat{f}_{-i}
+\]
+
+et
+
+\[
+h_{CV} = argmin(CV)
+\]
+
+
+- $CV + \int f^{\ 2} dy$ est un estimateur sans bias de $ISE$ 
+- Le paramètre de lissage $h_{cv}$ converge vers celui qui minimise le $MISE$.
+
+
+* Cas multivarié
+#+LATEX:\begin{frame}{Plan}
+#+LATEX:\tableofcontents[currentsection]
+#+LATEX:\end{frame}
+
+** Estimateur naïf 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Il est possible d'étendre ces procédures d'estimation au cas multidimensionnel
+- L'estimateur naïf peut être généralisé au cas bivarié : 
+
+\[
+\hat{f}(y_1, y_2) = \frac{1}{nh^2} \sum_{i = 1}^n I({y_1 - \frac{h}{2} < y_{1i} < y_1 + \frac{h}{2}}) I({y_2 - \frac{h}{2} < y_{2i} < y_2 + \frac{h}{2}})
+\]
+
+** Estimateur par la méthode des noyaux 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Dans le cas bivarié, l'estimateur du noyau est obtenu par :  
+
+\[
+\hat{f}(y_1, y_2) = \frac{1}{nh^2} \sum_{i = 1}^n \mathcal{K}(\frac{y_1 - y_{1i}}{h}) \mathcal{K}(\frac{y_2 - y_{2i}}{h})
+\]
+
+- Cette formule peut se généraliser en considérant une matrice $H$ de paramètre de lissage. 
+
+\[
+\hat{f}(y) = \frac{1}{n} \sum_{i = 1}^n \frac{1}{det(H)} \mathcal{K}(H^{-1}(y - y_{-i}))
+\]
+
+
+** Choix des noyaux : Gaussien 					    :B_frame:
+
+- Cas bivarié
+
+\[
+\mathcal{K}(x_1, x_2) = \frac{1}{2 \pi} exp(-\frac{x_1^2 + x_2^2}{2})
+\]
+
+- Cas général ($d > 2$)
+
+\[
+\mathcal{K}(x) = (2 \pi)^{-\frac{d}{2}} exp(-\frac{x^{T}x}{2})
+\]
+
+#+begin_src R :exports results :results silent
+  sen_gdp <- read.csv("../data/sen_gdp.csv", row.names = 1)[-(1:7), 1]
+  sen_gdp <- sen_gdp / mean(sen_gdp)
+  mali_gdp <- read.csv("../data/mali_gdp.csv", row.names = 1)[,1]
+  mali_gdp <- mali_gdp / mean(mali_gdp)  
+  f <- kde2d(x = sen_gdp, y = mali_gdp)  
+#+end_src
+
+
+** Choix des noyaux : Epanechnikov 				    :B_frame:
+
+- Cas bivarié
+
+\[
+\mathcal{K}(x_1, x_2) = \frac{1}{2 \pi} (1 - x_1^2 - x_2^2)\ I(x_1^2 + x_2^2 < 1)
+\]
+
+- Cas général ($d > 2$)
+
+\[
+\mathcal{K}(x) = (2 c_d)^{-1}(d + 2) (1 - x^{T}x)\ I(x^{T}x < 1) 
+\] 
+
+avec $c_d$ : volume de la sphère unité
+
+
+** Choix des noyaux						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/contour.pdf
+  contour(f, ylab = "Mali GDP", xlab = "Senegal GDP")  
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/persp.pdf
+  persp(f, col = "steelblue", theta = 100, ylab = "Mali GDP", xlab = "Senegal GDP", zlab = "Density", phi = 20)
+#+end_src
+
+
+
+** Le fléau de la dimension					    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Phénomène selon lequel le nombre d'observation requis pour obtenir des estimateurs satisfaisants
+  augmentent de manière explosive avec le nombre de dimension.
+
+- Silverman (1986) calcule le nombre de données nécessaire à avoir un MSE inférieur à $0.1$
+  au point $0$ d'un estimateur à noyau gaussien d'une distribution gaussienne.
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+#+begin_src R :exports results :results output graphics :file ../figures/curse.pdf :width 6
+  dim <- 1:10
+  obs <- c(4, 19, 67, 223, 768, 2790, 10700, 43700, 187000, 842000)
+  plot(dim, obs, pch = 19, cex = 0.7, type = "o", las = 1, lwd = 0.3,
+       xlab = "nombre de dimension", ylab = "nombre d'observation")
+#+end_src
+
+
+** Bibliographie						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+#+BEGIN_LATEX
+\begin{thebibliography}{1}
+\setbeamertemplate{bibliography item}[book]
+\bibitem{A} Silverman B.W. (1986), Density estimation for statistics and data analysis, 
+CRC press
+\end{thebibliography}
+#+END_LATEX

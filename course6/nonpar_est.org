@@ -1,0 +1,49 @@
+#+TITLE: Estimation non paramétrique de paramètre de position et d'échelle
+#+AUTHOR: Ahmadou H. DICKO
+#+DATE: Février 2014
+#+startup: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xetex, bigger]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+#+LATEX_HEADER: \newminted{r}{fontsize=\small, bgcolor=newgray}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text,Ligatures=Common]{Minion Pro}
+#+LATEX_HEADER: \setsansfont[Mapping=tex-text,Ligatures=Common]{Myriad Pro}
+#+LATEX_HEADER: \setmathfont[Scale=MatchLowercase]{Minion Pro}
+#+LATEX_HEADER: \setmonofont[Scale=0.75]{Source Code Pro}
+#+LATEX_HEADER: \institute[ENSAE]{ENSAE}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: Boadilla
+#+BEAMER_COLOR_THEME: orchid
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+#+PROPERTY: results output graphics
+#+OPTIONS: toc:nil H:2
+
+#+LATEX:\selectlanguage{frenchb}
+#+LATEX:\begin{frame}[t]{Plan}
+#+LATEX:\tableofcontents
+#+LATEX:\end{frame}
+
+* Introduction
+#+begin_src R :exports none :results silent :session
+  library(Cairo)
+  library(plyr)
+  mainfont <- "Minion Pro"
+  CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
+             bold = paste(mainfont, "style=Bold", sep=":"),
+             italic = paste(mainfont, "style=Italic", sep=":"),
+             bolditalic = paste(mainfont, "style=Bold Italic,BoldItalic", sep=":"))
+  pdf <- CairoPDF
+  options(prompt = "> ")
+#+end_src
+  
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:

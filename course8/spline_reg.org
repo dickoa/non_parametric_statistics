@@ -1,0 +1,456 @@
+#+TITLE: Régression non paramétrique : méthode des splines
+#+AUTHOR: Ahmadou H. DICKO
+#+DATE: Février 2014
+:HEADER:
+#+startup: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xetex, bigger]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+#+LATEX_HEADER: \newminted{r}{fontsize=\small, bgcolor=newgray}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text,Ligatures=Common]{Minion Pro}
+#+LATEX_HEADER: \setsansfont[Mapping=tex-text,Ligatures=Common]{Myriad Pro}
+#+LATEX_HEADER: \setmathfont[Scale=MatchLowercase]{Minion Pro}
+#+LATEX_HEADER: \setmonofont[Scale=0.75]{Source Code Pro}
+#+LATEX_HEADER: \institute[ENSAE]{ENSAE}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: Boadilla
+#+BEAMER_COLOR_THEME: orchid
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+#+PROPERTY: results output graphics
+#+OPTIONS: toc:nil H:2
+:END:
+
+#+LATEX:\selectlanguage{frenchb}
+#+LATEX:\begin{frame}[t]{Plan}
+#+LATEX:\tableofcontents
+#+LATEX:\end{frame}
+
+* Introduction
+
+** Introduction
+
+- Soit le modèle de régression suivant :
+
+\[
+y = m(x) + \epsilon
+\]
+
+avec
+
+1) $y$ et $x$ $\in$ $\mathbb{R}$ 
+2) $\mathbb{E}(\epsilon | X = x) = 0$
+3) $m(.)$ inconnue
+
+* Méthodes des splines
+
+** Splines : méthode 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+- L'idée de l'approche splines est de construire un estimateur 
+  par morceaux afin de rendre compte de la non linéarité
+
+- Il s'agit donc d'un extension du modèle linéaire
+
+\[
+y = \beta_0 + \beta_1 x + \beta_2 (x - k)_{+} + \epsilon
+\]
+
+- $(x - k)_{+} = max(x - k, 0)$
+- $k$ est un point de jonction entre deux morceaux (/noeud/)
+- L'estimation se fait par MCO
+- il s'agit d'une projection orthogonal de $y$ sur la base ${1, x, (x - k)_{+}}$
+
+** Splines : méthode 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Il est possible d'étendre le modèle précédent à $q$ noeuds.
+
+\[
+y = \beta_0 + \beta_1 x + \sum_{j = 1}^{q} \beta_{1j} (x - k_j)_{+} + \epsilon
+\]
+
+- L'estimation consiste donc à projeter $y$ sur la base linéaire suivante :
+
+\[
+1, x, (x - k_1)_+, ..., (x - k_q)_+
+\]
+
+** Splines : méthode 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+
+#+begin_src R :exports results :results silent
+  library(mgcv)
+  data(lidar, package = "SemiPar")
+  m1 <- gam(logratio ~ bs(range, degree = 1, knots = seq(500, 650, by = 50)),
+            data = lidar)
+  m2 <- gam(logratio ~ bs(range, degree = 1, knots = c(575, 600)),
+            data = lidar)
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5    
+    :END:
+
+
+#+begin_src R :exports results :results output graphics :file ../figures/splineknot2.pdf
+  plot(logratio ~ range, data = lidar, pch = 19, cex = 0.3, las = 1)
+  fit <- predict(m2, data.frame(range = sort(lidar$range)))
+  lines(sort(lidar$range), fit, col = "red")
+  title("Nombre de noeuds : 2")
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5    
+    :END:
+
+
+#+begin_src R :exports results :results output graphics :file ../figures/splineknot5.pdf
+  plot(logratio ~ range, data = lidar, pch = 19, cex = 0.3, las = 1)
+  fit <- predict(m1, data.frame(range = sort(lidar$range)))
+  lines(sort(lidar$range), fit, col = "red")
+  title("Nombre de noeuds : 5")
+#+end_src
+
+** Splines : méthode 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+
+- Le modèle linéaire par morceaux n'est pas continue (discontinuité aux noeuds)
+- On peut construire un estimateur continue en utilisant une famille de base
+  de splines plus générale (pas forcément linéaire) 
+  \[
+   b_0(x, k), b_1(x, k), ..., b_r(x, k)
+  \]
+- Le modèle associé est alors :
+  \[
+   y = \sum_{j = 1}^{q} \beta_j b_j(X, k) + \epsilon
+  \]
+
+- Dans la pratique, des fonctions polynomiales (quadratiques, cubiques) sont souvent utilisées comme base
+
+** Splines : méthode 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Une fois les noeuds fixés le modèle peut être estimé par MCO
+- Il faut donc faire deux choix important pour l'estimation :
+  - le nombre de noeuds
+  - le choix des noeuds
+- Il existe des approches qui permettent d'obtenir automatique du choix 
+  des noeuds mais elles sont couteuse en temps de calcul
+- Une autre approche plus pratique est l'utilisation des splines pénalisés
+
+
+
+** Splines pénalisées 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+- Pour chaque nombre de noeuds données il existe un grand nombre de modèle
+- L'approche des splines pénalisées consiste à contraindre l'estimation des 
+  paramètres afin de reduire l'influence des choix du nombre de noeuds et 
+  du positionnement des noeuds
+
+- Le principe consiste à :
+  -  Décomposer $m(x)$ en une base de splines
+  -  Choisir les valeurs de  $\beta$ qui minimise le critère :
+     \[
+      \sum_{i = 1}^{n} [y_i - m(x_i)]^2 + \lambda \int[m^{''}(x)]^2 dx
+     \]
+
+  - Il s'agit d'une minimisation avec multiplicateur de lagrange et $\lambda$
+    contrôle la rapidité de la fluctuation de $m$
+
+* Choix de la base splines
+** Base de fonctions puissances 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- L'estimation par les splines nécessite au préalable une base de fonctions
+
+- La base de fonctions linéaires présentées en début de chapitre 
+  nous donne un estimateur discontinu non lisse de la fonction $m$
+
+- Pour corriger cette discontinuité on peut choisir une base de fonctions
+  dont les derivées premières continues
+
+
+** Base de fonctions puissances 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+
+
+- Un choix populaire est celle de la base de fonctions puissance à l'ordre $p$
+
+\[
+1, x, ..., x^p,  (x - k_1)_+^{p}, ..., (x^p - k_q)^{p}_+
+\]
+
+- Le modèle de regression associé s'écrit 
+
+\[
+y = \beta_0 + \beta_1 x + ... + \beta_q x^p + \sum_{i = 1}^{q} \beta_{pj} (x - k_j)_{+}^p + \epsilon
+\]
+
+- On est alors sure que $(x - k_j)_{+}^p$ à une derivées d'ordre $p-1$ continue
+- Les fonctions quadratiques mais surtout cubiques sont souvent utilisés dans la pratique
+- L'estimation se fait aussi par MCO
+
+** Bases de fonction puissance			:B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+
+
+
+
+- Estimation d'une fonction par les splines cubiques
+
+\[
+\hat{m}(x) = 2 + x - 2x^2 + x^3 + (x - 0.4)_+^3 + (x - 0.8)_+^3
+\]
+
+
+#+begin_src latex :exports results 
+\[
+\hat{m}(x) = 
+\begin{cases}
+2 + x - 2x^2 + x^3  & \text{ si $x < 0.4$}\\
+2 + x - 2x^2 + x^3 + (x - 0.4)^3 & \text{ si $0.4 \leq x < 0.8$}\\
+2 + x - 2x^2 + x^3 + (x - 0.4)^3 + (x - 0.8)^3 & \text{ si $x \geq 0.8$}
+\end{cases}
+\]
+#+end_src
+
+# \[
+# \hat{m}(x) = 
+# \left\{\, 2 + x - 2x^2 + x^3 \right\}
+# \]
+
+** Choix de la base des splines : 	    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+
+
+
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.7     
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/splinecub.pdf
+  m <- function(x) {
+      if (x < 0.4) {
+          m <- 2 + x - 2 * x^2 + x^3
+      } else {
+          if (x < 0.8) {
+              m <- 2 + x - 2 * x^2 + x^3 + (x - 0.4)^3
+          } else {
+              m <-  2 + x - 2 * x^2 + x^3 + (x - 0.4)^3 - (x - 0.8)^3
+          }
+      }
+      m
+  }
+  m <- Vectorize(m)
+  curve(m, 0, 1, las = 1)
+  points(x = 0.4, y = m(0.4))
+  points(x = 0.8, y = m(0.8))
+  ## curve(2 + x - 2 * x^2 + x^3 + (x - 0.4)^3, 0.4, 0.8,
+  ##       add = TRUE, col = "red")
+  ## curve(2 + x - 2 * x^2 + x^3 + (x - 0.4)^3 - (x - 0.8)^3, 0.8, 1,
+  ##       add = TRUE, col = "blue")
+#+end_src
+
+
+
+
+** Choix de la base des splines : 	    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+
+#+begin_src R :exports results :results silent
+  m3 <- gam(logratio ~ s(range, bs = "cr"), data = lidar)
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.8
+    :END:
+
+#+begin_src R :exports results :results output graphics :file ../figures/splinecubnew.pdf
+  plot(logratio ~ range, data = lidar, pch = 19, cex = 0.3, las = 1)
+  fit <- predict(m3, data.frame(range = sort(lidar$range)))
+  lines(sort(lidar$range), fit, col = "red")
+  title("Splines cubiques")
+#+end_src
+
+
+
+** Base B-splines						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Un autre choix populaire de base est celle dite des B-splines
+- Les B-splines sont caractérisés par :
+  - Fonctions locale à support compact (nulle en dehors de noeuds adjacent)
+  - Résolution locale de l'estimation et calcul simple
+  - Formulation recursive des éléments de la base
+
+** Base B-splines						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- La base B-splines de dimension r :
+
+\[
+\Beta_0^p(x), \Beta_1^p(x),...,\Beta_r^p(x)
+\]
+
+- Les éléments s'obtiennent de manière recursive :
+
+\[
+\Beta_j^p = \frac{k_j - x}{(k_{j + p} - k_j)} \Beta_j^{p-1} + \frac{k_{j+p+1} - x}{(k_{j + p + 1} - k_{j+1})} \Beta_{j+1}^{p-1}
+\]
+
+- Le modèle de regression se réecrit alors :
+
+\[
+y = \sum_{j = 0}^{r} \beta_j \Beta_j^p(x)
+\]
+
+
+** Choix du nombre et positionnement des noeuds
+- L'estimation du modèle est sensible aux nombres de noeuds choisis :
+  - Un nombre de noeuds élevé implique une fonction $m$ lisse et fluctuante
+  - Un nombre de noeuds élevé implique
+
+- Le positionnement se fait généralement selon deux approches :
+  - On peut positionner les noeuds sur les quantiles de la variables explicative
+  - On peut aussi positionner les noeuds à equidistances (intervalle entre 2 noeuds égales)
+   
+** Choix du Paramètre de lissage
+
+- L'algorithme est sensible aux choix des noeuds et leurs emplacements
+- Le paramètre de pénalité $\lambda$ permet contrôle les fluctuations de $m$
+- Donc le choix d'un $\lambda$ optimal est important
+- Dans la pratique  on choisi le paramètre qui rend l'estimation 
+  le plus proche possible de la vraie fonction.
+
+- Le critère à minimiser est le suivant :
+
+\[
+MSE(\lambda) = \frac{1}{n} \sum_{i = 1}^n [\hat{m}(x_i) - m(x_i)]^2
+\]
+
+
+
+
+** Choix du Paramètre de lissage				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Dans la pratique on ne connait pas la fonction $m$, on utilise donc
+  la validation croisée pour contourner ce problème.
+
+- On cherche le $\lambda$ qui minimise donc :
+
+\[
+CV(\lambda) = \frac{1}{n} \sum_{i = 1}^n [y_i - \hat{m}_{-i}(x_i)]^2
+\]
+
+
+- Il est possible d'approximer le critère CV par :
+
+\[
+GCV(\lambda) = \frac{n \sum_{i = 1}^n [y_i - \hat{m}_(x_i)]^2 }{[tr(I - H)]^2}
+\]
+
+- $H = X(X^{T}X + \lambda S)^{-1} X^{T}$ : matrice d'influence de la régression
+- Cette approximation permet de simplifier les calculs car elle ne nécessite qu'une seule estimation
+  contre ($n$ estimation pour $CV$)
+
+
+** Choix du Paramètre de lissage				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+
+#+begin_src R :exports results :results silent
+  m4 <- gam(logratio ~ s(range, bs = "cr", sp = 0), data = lidar)
+  m5 <- gam(logratio ~ s(range, bs = "cr", sp = 1), data = lidar)
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5    
+    :END:
+
+
+#+begin_src R :exports results :results output graphics :file ../figures/spline_lambda1.pdf
+  plot(logratio ~ range, data = lidar, pch = 19, cex = 0.3, las = 1)
+  fit <- predict(m4, data.frame(range = sort(lidar$range)))
+  lines(sort(lidar$range), fit, col = "red")
+  title(expression(lambda == 0))
+#+end_src
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5    
+    :END:
+
+
+#+begin_src R :exports results :results output graphics :file ../figures/spline_lambda2.pdf
+  plot(logratio ~ range, data = lidar, pch = 19, cex = 0.3, las = 1)
+  fit <- predict(m5, data.frame(range = sort(lidar$range)))
+  lines(sort(lidar$range), fit, col = "red")
+  title(expression(lambda == 1))
+#+end_src

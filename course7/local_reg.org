@@ -1,0 +1,424 @@
+#+TITLE: Régression non paramétrique : méthode des polynômes locaux
+#+AUTHOR: Ahmadou H. DICKO
+#+DATE: Février 2014
+:HEADER:
+#+startup: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [xetex, bigger]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \definecolor{newgray}{rgb}{0.95, 0.95, 0.95}
+#+LATEX_HEADER: \newminted{r}{fontsize=\small, bgcolor=newgray}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, label=R output, frame=lines, labelposition=topline}
+#+LATEX_HEADER: \setmainfont[Mapping=tex-text,Ligatures=Common]{Minion Pro}
+#+LATEX_HEADER: \setsansfont[Mapping=tex-text,Ligatures=Common]{Myriad Pro}
+#+LATEX_HEADER: \setmathfont[Scale=MatchLowercase]{Minion Pro}
+#+LATEX_HEADER: \setmonofont[Scale=0.75]{Source Code Pro}
+#+LATEX_HEADER: \institute[ENSAE]{ENSAE}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: Boadilla
+#+BEAMER_COLOR_THEME: orchid
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes 
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+#+PROPERTY: results output graphics
+#+OPTIONS: toc:nil H:2
+:END:
+
+#+LATEX:\selectlanguage{frenchb}
+#+LATEX:\begin{frame}[t]{Plan}
+#+LATEX:\tableofcontents
+#+LATEX:\end{frame}
+
+* Introduction
+#+begin_src R :exports none :results silent :session
+  library(Cairo)
+  library(plyr)
+  mainfont <- "Minion Pro"
+  CairoFonts(regular = paste(mainfont, "style=Regular", sep=":"),
+             bold = paste(mainfont, "style=Bold", sep=":"),
+             italic = paste(mainfont, "style=Italic", sep=":"),
+             bolditalic = paste(mainfont, "style=Bold Italic,BoldItalic", sep=":"))
+  pdf <- CairoPDF
+  options(prompt = "> ")
+#+end_src
+  
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+ - Supposons qu'on dispose d'une variable endogène $Y$ que l'on veut expliquer
+   par d'autres variable $X$.
+
+ - Il est alors possible d'approcher la valeur moyenne de cette variable $Y$ en fonction
+   de $X$ en estimant l'espérance conditionnelle :
+
+ \[
+ \mathbb{E}(Y | X)
+ \]
+
+ - Une approche paramétrique classique est celle du modèle linéaire :
+   - $\mathbb{E}(Y | X) = X \mathcal{\Beta}$
+   - $Y \sim \mathcal{N}(X \mathcal{\Beta}, \sigma^2)$
+ 
+
+** Introduction							    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+
+- Cependant cette approche est sensible au erreurs de spécification de modèle
+
+- Le but de l'approche non paramétrique est d'obtenir une estimation
+  de la relation entre $y$ et $x$ sans faire d'hypothèse sur cette 
+  relation 
+
+\[
+y = m(x) + \epsilon
+\]
+
+- $m(.)$ est donc la fonction à estimer
+- Une approche populaire est d'étendre l'estimateur à noyau
+  au cadre de la regression : La méthode de Nadaraya-Watson 
+
+* Méthodes des Nadaraya-Watson
+** Estimateur à noyau de Nadaraya-Watson			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- On peut écrire le modèle de regression en utilisant l'espérance conditionnelle
+- En supposant que $\mathbb{E}(\epsilon | x) = 0$, il est possible de réecrire le 
+  modèle sous la forme suivante :
+
+\[
+\mathbb{E}(y | x) = m(x)
+\]
+
+
+
+** Estimateur à noyau de Nadaraya-Watson			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- L'estimateur à noyau de Nadaraya-Watson est une moyenne pondérée de $y_i$
+
+\[
+\hat{m}(x) = \sum_{i = 1}^n w_i(x) y_i
+\]
+
+- Les poids ont des valeurs sont d'autant plus fortes que les $x_i$ sont proche de $x$.
+ 
+\[
+w_i(x) = \frac{\mathcal{K}(\frac{x - x_i}{h})}{\sum_{i = 1}^n \mathcal{K}(\frac{x - x_i}{h})}
+\]
+
+- On peut choisir les mêmes noyaux utilisés pour estimer les densités univariées
+
+
+
+** Estimateur à noyau de Nadaraya-Watson 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+Par définition on a :
+
+\[
+\mathbb{E}(y | x) = \int_{-\infty}^{+\infty} y\ f(y | x) dy
+\]
+
+\[
+\mathbb{E}(y | x) = \int_{-\infty}^{+\infty} \frac{y\ f(x, y)}{f(x)} dy
+\]
+
+\[
+\mathbb{E}(y | x) =  \frac{\int_{-\infty}^{+\infty} y\ f(x, y)}{\int_{-\infty}^{+\infty} f(x, y)} dy
+\]
+
+** Estimateur à noyau de Nadaraya-Watson 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+Soit l'estimation de la densité jointe f(x, y) définit par le produit de noyaux
+
+\[
+\hat{f}(x, y) = \frac{1}{n h^2} \sum_{i = 1}^n \mathcal{K}(\frac{x - x_i}{h})\ \mathcal{K}(\frac{y - y_i}{h})
+\]
+
+En intégrant le numérateur on obtient :
+
+\[
+\int_{-\infty}^{+\infty} \hat{f}(x, y) dy = \frac{1}{n h^2} \sum_{i = 1}^n \mathcal{K}(\frac{x - x_i}{h})\ \underbrace{\int_{-\infty}^{+\infty} \mathcal{K}(\frac{y - y_i}{h}) dy}_{1}
+\]
+
+On obtient alors le résultat final en simplifiant le dénominateur
+
+\[
+\int_{-\infty}^{+\infty} y\ \hat{f}(x, y) dy = \frac{1}{n h^2} \sum_{i = 1}^n \mathcal{K}(\frac{x - x_i}{h})\ \underbrace{\int_{-\infty}^{+\infty} y\ \mathcal{K}(\frac{y - y_i}{h}) dy}_{y_i}
+\]
+
+
+** Estimateur à noyau de Nadaraya-Watson			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Comme l'estimateur d'une densité, l'estimateur de Nadaraya-Watson dépends
+  du choix du noyau et du paramètre de lissage.
+- Le choix du paramètre de lissage ($h$) est bien plus déterminant que celui du noyau
+- Il existe plusieur méthode pour obtenir le $h$ optimal (empirique, validation croisée, etc.)
+- Par construction :
+  - $h = \infty : \hat{m}(x) = \frac{1}{n}\sum_{i = 1}^n y_i$ 
+  - $h = 0 : \hat{m}(x) = y_i$ 
+ 
+
+
+** Estimateur à noyau de Nadaraya-Watson 			    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+1) Plus flexible que les moindre carré ordinaires
+2) Grande sensibilité aux choix du paramètre de lissage ($h$)
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+#+begin_src R :exports results :results graphics :file ../figures/ksmooth.pdf
+  data(ethanol, package = "SemiPar")
+  plot(NOx ~ E, data = ethanol, pch = 19, cex = 0.5)
+  fit1 <- ksmooth(x = ethanol$E, y = ethanol$NOx, kernel = "normal",
+                 bandwidth = 0.8)
+  fit2 <- ksmooth(x = ethanol$E, y = ethanol$NOx, kernel = "normal",
+                 bandwidth = 0.6)
+  fit3 <- ksmooth(x = ethanol$E, y = ethanol$NOx, kernel = "normal",
+                 bandwidth = 0.4)
+  fit4 <- ksmooth(x = ethanol$E, y = ethanol$NOx, kernel = "normal",
+                 bandwidth = 0.2)
+  lines(fit1, col = "red")
+  lines(fit2, col = "blue")
+  lines(fit3, col = "green")
+  lines(fit4, col = "black")
+  legend("topleft", legend = c("h = 0.8", "h = 0.4", "h = 0.6", "h = 0.2"),
+         col = c("red", "blue", "green", "black"), lty = rep("solid", 4))
+#+end_src
+
+
+
+*** 								   :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+#+begin_src R :exports results :results graphics :file ../figures/ksmooth2.pdf
+  data(mcycle, package = "MASS")
+  plot(accel ~ times, data = mcycle, pch = 19, cex = 0.5)
+  fit1 <- ksmooth(y = mcycle$accel,
+                 x = mcycle$times,
+                 kernel = "normal",
+                 bandwidth = 5)
+  fit2 <- lm(accel ~ times, data = mcycle)
+  fit3 <- lm(accel ~ poly(times, 5), data = mcycle)
+  lines(fit1, col = "red")
+  abline(fit2, col = "green")
+  lines(mcycle$times, fitted(fit3), col = "blue")
+  legend("topleft", legend = c("Nad. Wats.", "OLS", "OLS poly."),
+         col = c("red", "green", "blue"), lty = rep("solid", 3))
+
+#+end_src
+
+
+** Estimateur à noyau de Nadaraya-Watson		            :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- L'estimateur de Nadaraya-Watson n'est pas estimable pour des points $x$ 
+  de densité nulle (par construction)
+- Il en résulte alors une grande imprécision pour des points de densité faible
+- Une autre conséquence est l'inadéquation de cet estimateur pour les problèmes 
+  de prévision en dehors de l'échantillon.
+- L'estimateur de Nadaraya-Watson est biaisé et en particulier ce biais est d'autant
+  plus grand qu'on se rapproche des extrémités
+- L'estimateur de Nadaraya-Watson est un cas particulier d'estimateur beaucoup
+  plus flexible : les polynômes locaux.
+
+* Méthodes des polynômes locaux
+** Les polynômes locaux						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- De part sa définition, on remarque que L'estimateur de Nadaraya-Watson 
+  utilise un polynômes de degrée 0.
+
+- Il est possible de construire un estimateur basé sur : 
+  - des polynômes de degrée 1 : estimateur localement linéaire
+  - des polynômes de degrée 2 : estimateur localement quadratique
+  - des polynômes de degrée $p$ : estimateur localement polynômiale 
+
+- Ces estimateurs permettent de corriger les principales sources de biais
+  de l'estimateur de Nadaraya-Watson.
+
+** Estimateur localement linéaire				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- L'estimateur localement linéaire au point $x$ est l'estimateur
+  de $\alpha$ et $\beta$ du modèle de regression
+
+\[
+y_i = \alpha + \beta(x_i - x) + \epsilon_i
+\]
+
+- On peut l'estimer en utilisant des moindres carrés pondérés, en utilisant comme
+  poids le noyau $\mathcal{K}(\frac{x - x_i}{h})$
+
+\[
+\mathcal{K}(\frac{x - x_i}{h}) y_i = \alpha \mathcal{K}(\frac{x - x_i}{h}) + \beta \mathcal{K}(\frac{x - x_i}{h}) (x_i - x) + \epsilon_i
+\]
+
+
+** Estimateur localement quadratique				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Il est possible de construire un estimateur plus flexible que l'estimateur
+  localement linéaire
+
+\[
+y_i = \alpha + \beta(x_i - x) + \delta(x_i - x)^2 + \epsilon_i
+\]
+
+- Comme dans le cas précédent, l'estimation se fait par moindre carré pondérée
+
+\[
+\mathcal{K}(\frac{x - x_i}{h}) y_i = \alpha \mathcal{K}(\frac{x - x_i}{h}) + \beta \mathcal{K}(\frac{x - x_i}{h})(x_i - x) + \delta \mathcal{K}(\frac{x - x_i}{h})(x_i - x)^2 + \epsilon_i
+\]
+
+
+
+** Généralisation 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- La généralisation de cette approche est naturelle
+
+\[
+y_i = \alpha + \beta(x_i - x) + \delta(x_i - x)^2 + \dots + \lambda(x_i - x)^p + \epsilon_i
+\]
+
+\[
+y_i = m(x_i) + \epsilon_i
+\]
+
+- L'estimation se fait par moindre carré pondéré, il alors suffit de minimiser 
+
+\[
+\sum_{i = 1}^n \mathcal{K}(\frac{x - x_i}{h}) (y_i - m(x_i))^2
+\]
+
+** Estimation des différentielles 				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+
+
+Au voisinage de $x_i$, on peut écrire le développement de Taylor suivant :
+
+\[
+m(x_i) \simeq m(x) + m(x)^{'}(x - x_i) + \frac{m(x)^{''}}{2}(x - x_i)^2 + \dots + \frac{m(x)^{(p)}}{p!}(x - x_i)^p
+\]
+
+Par identification on a  :
+
+\[
+m(x) = \alpha,\quad m(x)^{'} = \beta,\quad m(x)^{''} = 2\delta,\quad m(x)^{(p)} = p \lambda
+\]
+
+* Choix des paramètres
+** Choix du Paramètre de lissage				    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+- Le paramètre de lissage à un impact important sur la forme de $m(.)$.
+
+- Le but est donc de choisir le paramètre $h$ qui permet de construire 
+  $\hat{m}$ le /plus proche/ possible de $m$.
+
+
+- Il suffit alors de minimiser la quantité :
+
+\[
+MISE(h) = \mathbb{E}[\int [\hat{m}(x) - m(x)]^2 dx]
+\]
+
+
+** Règle empirique 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- Des résultats de Silverman basé sur des simulations sur la loi normale
+  permettent de d'obtenir un $h$ optimale.
+
+\[
+h_{opt} = c n^{-\frac{1}{5}}
+\]
+
+- La valeur $c$ dépends de la vraie densité de $x$ et de la forme $m(.)$.
+- La spécification à priori de $m$ est délicate donc les règles empiriques
+  sont moins performantes que celles utilisées pour l'estimation d'une densité.
+
+
+** Validation croisée 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :END:
+
+- La méthode de validation croisée permet d'obtenir le $h$ optimal
+  qui doit minimiser :
+
+\[
+CV(h) = \frac{1}{n} \sum_{i = 1}^n [y_i - \hat{m}_{-i}(x_i)]^2
+\]
+
+- Avec $\hat{m}_{-i}$ la fonction de regression estimée sur toute les observations sauf $x_i$
+- Dans la pratique, la visualisation graphique doit être utilisé en conjonction avec la méthode
+  de validation croisée afin de choisir $h$.
+
+* Loi asymptotique  
+** Loi asymptotique 						    :B_frame:
+   :PROPERTIES:
+   :BEAMER_env: frame
+   :BEAMER_OPT: t
+   :END:
+
+\[
+\sqrt{hn}[\hat{m}(x) - m(x)] \longrightarrow \mathcal{N}(b, \frac{\nu \sigma^2}{f(x)})
+\]
+
+\[
+\hat{m}(x) \pm 1.96 \sqrt{\frac{\nu \hat{\sigma}^2}{n h \hat{f(x)}}}
+\]
+
+Avec 
+- $\nu = \int \mathcal{K}(u)^2 du$
+- $b$ : biais qui dépends de : $f^{'}$, $f^{''}$, $m$ et $m^{'}$
+- $\sigma^2$ la variance de $x$ 
+- $f(x)$ : densité de $x$
+- $\hat{f}(x)$ : estimateur à noyau de $f$

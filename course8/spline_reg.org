@@ -140,7 +140,7 @@ y = \beta_0 + \beta_1 x + \sum_{j = 1}^{q} \beta_{1j} (x - k_j)_{+} + \epsilon
 - On peut construire un estimateur continue en utilisant une famille de base
   de splines plus générale (pas forcément linéaire) 
   \[
-   b_0(x, k), b_1(x, k), ..., b_r(x, k)
+   b_0(x, k), b_1(x, k), ..., b_q(x, k)
   \]
 - Le modèle associé est alors :
   \[
@@ -197,7 +197,7 @@ y = \beta_0 + \beta_1 x + \sum_{j = 1}^{q} \beta_{1j} (x - k_j)_{+} + \epsilon
   nous donne un estimateur discontinu non lisse de la fonction $m$
 
 - Pour corriger cette discontinuité on peut choisir une base de fonctions
-  dont les derivées premières continues
+  dont les derivées premières sont continues
 
 
 ** Base de fonctions puissances 				    :B_frame:
@@ -217,7 +217,7 @@ y = \beta_0 + \beta_1 x + \sum_{j = 1}^{q} \beta_{1j} (x - k_j)_{+} + \epsilon
 - Le modèle de regression associé s'écrit 
 
 \[
-y = \beta_0 + \beta_1 x + ... + \beta_q x^p + \sum_{i = 1}^{q} \beta_{pj} (x - k_j)_{+}^p + \epsilon
+y = \beta_0 + \beta_1 x + ... + \beta_q x^p + \sum_{j = 1}^{q} \beta_{pj} (x - k_j)_{+}^p + \epsilon
 \]
 
 - On est alors sure que $(x - k_j)_{+}^p$ à une derivées d'ordre $p-1$ continue
@@ -369,7 +369,7 @@ y = \sum_{j = 0}^{r} \beta_j \Beta_j^p(x)
 
 - Le positionnement se fait généralement selon deux approches :
   - On peut positionner les noeuds sur les quantiles de la variables explicative
-  - On peut aussi positionner les noeuds à equidistances (intervalle entre 2 noeuds égales)
+  - On peut aussi positionner les noeuds à equidistances (distance entre 2 noeuds égale)
    
 ** Choix du Paramètre de lissage
 
